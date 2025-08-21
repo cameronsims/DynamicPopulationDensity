@@ -2,21 +2,29 @@
 ## Description 
 ### What?
 Dynamic Population Density is a project for the Murdoch University unit "ICT302 - Professional Practice Project."<br/>The project revolves around (TODO: ADD DESCRIPTION)
-
 ## Installation and Setup
+### Docker / Virtual Machines
 ### Modules / Libraries
 To run the project the following external libraries and modules are required: (TODO: ADD LIBRARIES TO ADD).
+### How To Run
+## GitHub Ettique 
+Please create your own branches and commit to them slowly. Once a feature is completed, provide a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) to merge the main code with the [master branch](https://github.com/cameronsims/DynamicPopulationDensity).<br/>Once a pull request has been made and you want it merged please email "cameronissacsims@gmail.com" to get my attention.
 ## Programming Style Guide
 ### Code Assumptions
 Below are a few assumptions for running this program. If one or more of these is not met, then there is no expectation that it should return valid expected values.
 ### How to write and document code 
 When writing all code/documentation, please use Javadoc style commenting that can be parsed by Doxygen.
 A style guide to writing these comments can be found on the [Doxygen Website](https://www.doxygen.nl/manual/docblocks.html).
-| Type  | What is Expected |
-| ----------- | ----------- | ----------- |
+
+
+| Type | What Is Expected |
+| ---- | ---------------- |
 | Files | Files should contain all of the following information: @file, @date, @author, @brief |
 | Functions | Functions should contain: @fn, @date, @author, @brief, @return. As well as all parameters using the @param tag. |
 | Classes | Classes should contain all of the following: @class/@struct, @date, @author, @brief |
 | Variables | Variables should only require documentation if they are existing in a class or global. For this, only describing the variable above should be required. |
-
+## Writing Style
+### Coupling / Cohesion
 All modules for the code should be contained within their own folders and should keep interaction between modules to an absolute minimum.
+### Testing
+All modules should have tests which test expected cases, unexpected cases and edge cases. <br/>These tests should be written in their own executables. Documentation is not required for the testing files. However, try keep it clean so it is still understnadable.
