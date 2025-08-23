@@ -3,35 +3,9 @@
 :date: 22/08/2025  
 :brief: This module creates our clients
 """
-from database.NodeClient import NodeDB as NodeClient
-from database.AttendanceClient import AttendanceDB as AttendanceClient
-from database.HistoricAttendanceClient import HistoricAttendanceDB as HistoricAttendanceClient
-
-""" 
-:fn: create_clients
-:date: 22/08/2025
-:author: Cameron Sims
-:brief: Creates instances of our clients.
-:param db_login: The database login information, this is used to connect to the database.
-:return: A tuple of the node client, attendance client, and historic attendance client.
-"""
-def create_clients(db_login):
-    # Get the MongoDB client
-    from pymongo import MongoClient
-
-    # Create the MongoClient
-    db_client = MongoClient(db_login['ip'])
-    db_database = db_client[db_login['name']]
-
-    # Create the node client 
-    node_client = NodeClient(db_login)
-
-    # Create the attendance client 
-    attendance_client = AttendanceClient(db_login)
-    # Create the historic attendance client
-    historic_client = AttendanceClient.HistoricAttendanceClient(db_login)
-
-    return (node_client, attendance_client, historic_client)
+from src.database.NodeClient import NodeDB as NodeClient
+from src.database.AttendanceClient import AttendanceDB as AttendanceClient
+from src.database.HistoricAttendanceClient import HistoricAttendanceDB as HistoricAttendanceClient
     
 """
 @class DatabaseClient
@@ -54,6 +28,63 @@ class DatabaseClient:
         with open(login_file, "r") as db_loginFile:
             # Read the JSON file, 
             db_login = json_load(db_loginFile)
+
+            # Login.
+            self.create_mongo_client(db_login)
+            self.collections = db_login['collections']
             
             # Create the database clients
-            self.node_client, self.attendance_client, self.historic_client = create_clients(db_login)
+            self.node_client, self.attendance_client, self.historic_client = self.create_clients(self.collections)
+
+    """
+    :fn: __del__
+    :date: 23/08/2025
+    :author: Cameron Sims
+    :brief: Called to delete the instance of the client
+    """
+    def __del__(self):
+        self.mongo_client.close()
+
+    """
+    :fn: create_clients
+    :date: 22/08/2025
+    :author: Cameron Sims
+    :brief: Creates the instance of the MongoDB Client.
+    """
+    def create_mongo_client(self, db_login):
+        # Import the MongoClient from pymongo
+        from pymongo import MongoClient
+
+        # Create the MongoClient
+        self.mongo_client = MongoClient(db_login['ip'])
+        self.mongo_database = self.mongo_client[db_login['name']]
+    """ 
+    :fn: create_clients
+    :date: 22/08/2025
+    :author: Cameron Sims
+    :brief: Creates instances of our clients.
+    :param collections: The dictonary of collections from the database login file.
+    :return: A tuple of the node client, attendance client, and historic attendance client.
+    """
+    def create_clients(self, collections):
+        # Create the node client 
+        node_client = NodeClient(self.mongo_database, collections['nodes'])
+
+        # Create the attendance client 
+        attendance_client = AttendanceClient(self.mongo_database, collections['attendance'])
+       
+        # Create the historic attendance client
+        historic_client = HistoricAttendanceClient(self.mongo_database, collections['historic_attendance'])
+
+        return (node_client, attendance_client, historic_client)
+    """ 
+    :fn: clear_clients
+    :date: 23/08/2025
+    :author: Cameron Sims
+    :brief: Deletes all data within our clients
+    """
+    def clear_clients(self):
+        for collection_name in self.collections:
+            collection = self.mongo_database[collection_name]
+            print(collection)
+            collection.delete_many({})

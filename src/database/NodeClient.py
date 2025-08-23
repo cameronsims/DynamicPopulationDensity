@@ -3,8 +3,8 @@
 :date: 22/08/2025
 :brief: This module defines all important functions for interacting with the external database.
 """
-from structures.node import Node
-import database.protoclient as ProtoClient
+from src.structures.node import Node
+from src.database.ProtoClient import ClientDB as ProtoClient
 from pymongo import MongoClient
 
 """
@@ -20,8 +20,9 @@ class NodeDB(ProtoClient):
     :author: Cameron Sims
     :brief: Initializes the NodeDB with a database client
     :param db_client: The database client to use for operations.
+    :param collection: The name of the collection to use for nodes.
     """
-    def __init__(self, db_client: MongoClient):
+    def __init__(self, db_client: MongoClient, collection: str):
         # We will store a copy of the client information, for use when we need access to information
         self.db_client = db_client
 

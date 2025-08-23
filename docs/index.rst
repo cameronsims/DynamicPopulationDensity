@@ -7,7 +7,11 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Table of Contents
-
-   other_documentation_file.rst
+   
+   :glob:
+   src/database/*
+   src/node/*
+   src/server/*
+   src/structures/*

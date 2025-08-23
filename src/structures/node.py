@@ -22,7 +22,7 @@ class Node:
     :param node_longitude: The longitude of the node.
     :param node_description: The description of the node, i.e.: the room name or location.
     """
-    def __init__(self, node_id, node_latitude, node_longitude, node_description):
+    def __init__(self, node_id: int = -1, node_latitude: float = 0.0, node_longitude: float = 0.0, node_description: str = None):
         
         self.id = node_id # This refers to the ID of one specific node.
         
@@ -34,7 +34,6 @@ class Node:
         self.longitude = node_longitude # Refers to the longitude of the node.
         self.description = node_description # This is the description of the node, this is used to describe the node.
 
-
     """
     :fn: __hash__
     :date: 22/08/2025
@@ -45,6 +44,20 @@ class Node:
     def __hash__(self):
         # This is used to create a hash of the node, this is used to identify if this node is unique.
         return hash(self.id)
+    
+    """
+    :fn: deserialise
+    :date: 23/08/2025
+    :author: Cameron Sims
+    :brief: Converts dict/JSON format to this object
+    :param data: The data that we are reading through
+    """
+    def deserialise(self, data:dict):
+        # This is used to serialise the node, this is used to insert the node into the database.
+        self.id = data["id"]
+        self.latitude = data["latitude"]
+        self.longitude = data["longitude"]
+        self.description = data["description"]
     
     """
     :fn: serialise

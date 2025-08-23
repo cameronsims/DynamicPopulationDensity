@@ -24,10 +24,5 @@ class ClientDB:
     :param data: The data that we are inserting into the database.
     """
     def insert_data(self, primary_key_query, data):
-        # Try check if the collection exists
-        if self.collection.find(primary_key_query):
-            # The node already exists. 
-            print("Error: Node already exists in the database.")
-            return 
         # Create a new node document, this will be inserted into the database.
         self.collection.insert_one(data)

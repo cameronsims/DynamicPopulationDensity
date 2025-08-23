@@ -3,7 +3,7 @@
 :date: 22/08/2025
 :brief: This module initializes the server and sets up the main application.
 """
-from database.Client import DatabaseClient
+from src.database.Client import DatabaseClient
 
 """
 :fn: server_main:
@@ -13,7 +13,6 @@ from database.Client import DatabaseClient
 """
 def server_main():
     dbclient = DatabaseClient("./data/dbLogin.json")
-    
 
 
 # This is the main entry point for the server side.
