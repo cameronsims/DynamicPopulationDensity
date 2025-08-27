@@ -86,5 +86,4 @@ class DatabaseClient:
     def clear_clients(self):
         for collection_name in self.collections:
             collection = self.mongo_database[collection_name]
-            print(collection)
             collection.delete_many({})

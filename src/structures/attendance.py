@@ -92,7 +92,13 @@ class Attendance:
         self.timestamp = timestamp
 
         # This refers to the ID of the node that observed this attendance record.
-        self.node_id = -1 if node is None else node.id 
+
+        # If we only have a node id...
+        if type(node) == int:
+            self.node_id = node
+        # If the node_id is a node object...
+        else: 
+            self.node_id = -1 if node is None else node.id 
 
         # This refers to a hash, this is used to identify if this person is unique.
         self.hash = hash
