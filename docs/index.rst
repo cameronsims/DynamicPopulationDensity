@@ -10,8 +10,8 @@ Contents
    :maxdepth: 4
    :caption: Table of Contents
    
-   :glob:
-   src/database/*
-   src/node/*
-   src/server/*
-   src/structures/*
+   src/database/
+   src/node/
+   src/graph/
+   src/server/
+   src/structures/
