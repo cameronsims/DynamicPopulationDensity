@@ -11,6 +11,19 @@ This project is in Python3, please try to use the version "Python 3.12.10".
 To run the project the following external libraries and modules are required: 
 - pymongo
 ### How To Run
+## Required Packages
+```bash 
+# This method is for Bebian based Linux Systems only
+# Note: Please allow non-superusers to capture packets!
+sudo apt install wireshark
+
+# Used for sniffing packet.s
+pip install pyshark
+
+# For documentation
+pip install sphinx
+pip install sphinx-rtd-theme
+```
 ## GitHub Ettique 
 Please create your own branches and commit to them slowly. Once a feature is completed, provide a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) to merge the main code with the [master branch](https://github.com/cameronsims/DynamicPopulationDensity).<br/>Once a pull request has been made and you want it merged please email "cameronissacsims@gmail.com" to get my attention.
 ## Programming Style Guide
