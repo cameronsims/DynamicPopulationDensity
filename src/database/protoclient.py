@@ -5,24 +5,25 @@
 """
 
 
-"""
-@class ClientDB 
-:date: 22/08/2025
-:author: Cameron Sims
-:brief: This class handles interactions with the database.
-"""
 class ClientDB:
+    """
+    :class: ClientDB 
+    :date: 22/08/2025
+    :author: Cameron Sims
+    :brief: This class handles interactions with the database.
+    """
+    
     # Used to refer to one specific collection in the database.
     collection = None
 
-    """ 
-    :fn: insert_data
-    :date: 22/08/2025
-    :author: Cameron Sims
-    :brief: Inserts a new node into the database.
-    :param primary_key_query: The query to find if something with this primary key in the database exists.
-    :param data: The data that we are inserting into the database.
-    """
     def insert_data(self, primary_key_query, data):
+        """ 
+        :fn: insert_data
+        :date: 22/08/2025
+        :author: Cameron Sims
+        :brief: Inserts a new node into the database.
+        :param primary_key_query: The query to find if something with this primary key in the database exists.
+        :param data: The data that we are inserting into the database.
+        """
         # Create a new node document, this will be inserted into the database.
         self.collection.insert_one(data)

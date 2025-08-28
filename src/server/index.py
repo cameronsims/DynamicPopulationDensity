@@ -5,13 +5,13 @@
 """
 from src.database.Client import DatabaseClient
 
-"""
-:fn: server_main:
-:date: 22/08/2025
-:author: Cameron Sims
-:brief: This function is the main entry point for the server side.
-"""
 def server_main():
+    """
+    :fn: server_main:
+    :date: 22/08/2025
+    :author: Cameron Sims
+    :brief: This function is the main entry point for the server side.
+    """
     dbclient = DatabaseClient("./data/dbLogin.json")
 
 

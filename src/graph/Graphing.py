@@ -9,32 +9,32 @@ from src.structures.attendance import Attendance, HistoricAttendance
 import matplotlib.pyplot as plt
 import numpy as np
 
-"""
-@class Graphing 
-:date: 23/08/2025
-:author: Cameron Sims
-:brief: This class graphs many types of array functions 
-"""
 class Graphing: 
-    
     """
-    :fn: __init__
+    :class: Graphing 
     :date: 23/08/2025
     :author: Cameron Sims
-    :brief: Creates the Graphing class for use with other parts of the program
+    :brief: This class graphs many types of array functions 
     """
+    
     def __init__(self):
+        """
+        :fn: __init__
+        :date: 23/08/2025
+        :author: Cameron Sims
+        :brief: Creates the Graphing class for use with other parts of the program
+        """
         pass 
 
-    """
-    :fn: create_node_total_activity
-    :date: 23/08/2025
-    :author: Cameron Sims
-    :brief: Creates a bar graph for each node, returning the plt.plot class
-    :param nodes: The nodes that we are reading from
-    :param history: The hisotrical activity we are plotting.
-    """
     def create_node_total_activity(self, nodes: list[Node], history: list[HistoricAttendance]):
+        """
+        :fn: create_node_total_activity
+        :date: 23/08/2025
+        :author: Cameron Sims
+        :brief: Creates a bar graph for each node, returning the plt.plot class
+        :param nodes: The nodes that we are reading from
+        :param history: The hisotrical activity we are plotting.
+        """
         # Create the bar categories and values 
         categories_len = len(nodes)
         categories = [ 0 ] * categories_len
