@@ -27,3 +27,12 @@ class ClientDB:
         """
         # Create a new node document, this will be inserted into the database.
         self.collection.insert_one(data)
+
+    def clear(self):
+        """ 
+        :fn: clear
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Clears the current collection of any data.
+        """
+        self.collection.delete_many({})

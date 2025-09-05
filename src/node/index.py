@@ -4,24 +4,62 @@
 :brief: This module initializes the client and sets up the main application.
 """
 
+from src.structures.attendance import Attendance, HistoricAttendance
 from src.database.Client import DatabaseClient
 from src.node.Sniffer import Sniffer
-from datetime import datetime
+
+def node_loop(sniffer: Sniffer, dbclient: DatabaseClient):
+    """
+    :fn: node_loop:
+    :date: 05/09/2025
+    :author: Cameron Sims
+    :brief: This function is the loop for the node, this can be exited by CTRL+C
+    :param sniffer: The sniffer instance we're using
+    :param dbclient: The database client to read to.
+    """
+    while True:
+        print("Start Sniffing...")
+        sniffer.start_sniffing()
+
+        print("Reading Packets from File...")
+        packets = sniffer.get_packets_from_file()
+
+        # Read into the packet
+        print("Inserting Packets into Database...")
+        dbclient.attendance_client.insert_many(packets)
+
+
+def node_main():
+    """
+    :fn: node_main:
+    :date: 05/09/2025
+    :author: Cameron Sims
+    :brief: This function is the main entry point for the node side.
+    """
+
+    sniffer = Sniffer("./data/sniffingConfig.json")
+    dbclient = DatabaseClient("./data/dbLogin.json")
+
+    # Clear the attendance client, we don't want any data from previous hours to intersect.
+    dbclient.attendance_client.clear()
+
+    # Enter the loop
+    try:
+        node_loop(sniffer, dbclient)
+    except KeyboardInterrupt:
+        print('Program exiting...')
+
+    # This should be decided by something else
+    # Squash the database
+    print("Squashing the Database Insertion.")
+
+    
+    dbclient.convert_attendance_to_historic()
+
+    print("Node has finished execution!")
+
+    
 
 # This is the main entry point for the server side.
 if __name__ == "__main__":
-    node_id = 0
-    sniffer = Sniffer(node_id, "Wi-Fi", "./data/captures/capture.pcapng")
-
-    dbclient = DatabaseClient("./data/dbLogin.json")
-
-    print("Start Sniffing...")
-    sniffer.start_sniffing(500)
-
-    print("Reading Packets from File...")
-    packets = sniffer.get_packets_from_file()
-
-    print("Inserting Packets into Database...")
-    for packet in packets:
-        dbclient.attendance_client.collection.insert_one(packet.serialise())
-
+    node_main()

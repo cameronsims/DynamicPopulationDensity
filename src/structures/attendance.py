@@ -23,8 +23,9 @@ class HistoricAttendance:
         :param node: The Node that is associated with this attendance record.
         :param hash: The hash of the person that was observed, this is used to identify if this person is unique.
         """
+        # Round the minutes down to last 30. 
         # This refers to the timestamp of the attendance record.
-        self.timestamp = timestamp
+        self.timestamp = HistoricAttendance.roundToLast30Minutes(timestamp)
 
         # This refers to the ID of the node that observed this attendance record.
         self.node_id = -1 if node is None else node.id
@@ -70,6 +71,18 @@ class HistoricAttendance:
             "node_id": self.node_id,
             "total_entries": self.total_entries
         }
+    
+    def roundToLast30Minutes(timestamp: datetime.datetime) -> datetime:
+        """
+        :fn: roundToLast30Minutes
+        :date: 03/09/2025
+        :author: Cameron Sims
+        :brief: Rounds a datetime down to 0 minutes or 30 minutes.
+        :return: A datetime rounded down.
+        """
+        minutes =  0 if timestamp.minute < 30 else 30
+        new_ts = datetime.datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, minutes)
+        return new_ts
 
 class Attendance:
     """

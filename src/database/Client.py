@@ -45,7 +45,7 @@ class DatabaseClient:
         """
         self.mongo_client.close()
 
-    def create_mongo_client(self, db_login):
+    def create_mongo_client(self, db_login : dict):
         """
         :fn: create_clients
         :date: 22/08/2025
@@ -59,7 +59,7 @@ class DatabaseClient:
         self.mongo_client = MongoClient(db_login['ip'])
         self.mongo_database = self.mongo_client[db_login['name']]
     
-    def create_clients(self, collections):
+    def create_clients(self, collections: dict):
         """ 
         :fn: create_clients
         :date: 22/08/2025
@@ -89,3 +89,16 @@ class DatabaseClient:
         for collection_name in self.collections:
             collection = self.mongo_database[collection_name]
             collection.delete_many({})
+
+    def convert_attendance_to_historic(self):
+        """ 
+        :fn: convert_attendance_to_historic
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Converts all the attendance to historic data
+        """
+        # Get the squashed data.
+        squashed = self.attendance_client.squash()
+
+        # Convert the squashed data to Historic Data client
+        self.historic_client.insert_many(squashed)

@@ -47,3 +47,28 @@ class HistoricAttendanceDB(ProtoClient):
         
         # Create a new node document, this will be inserted into the database.
         self.insert_data(primary_key_query, attendance_data)
+
+    def insert_many(self, attendence_history: list[HistoricAttendance]):
+        """ 
+        :fn: insert_many
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Inserts a list of attendance record into the database.
+        :param attendence_history: The list of attendance we're inserting 
+        """
+        # This is the query that we are going to use to find.
+        primary_key_query = None # { "node_id": attendence_history.node_id, "timestamp": attendence_history.timestamp }
+
+        # The list of values 
+        history_len = len(attendence_history)
+        history = [ 0 ] * history_len
+        
+        # For each record
+        i = 0
+        while i < history_len:
+            attendance = attendence_history[i]
+            history[i] = attendance.serialise()
+            i += 1
+        
+        # Insert all into the list 
+        self.collection.insert_many(history)

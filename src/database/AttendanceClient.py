@@ -4,7 +4,7 @@
 :brief: This module defines all important functions for interacting with the external database.
 """
 from src.structures.node import Node
-from src.structures.attendance import Attendance   
+from src.structures.attendance import Attendance, HistoricAttendance
 from src.database.ProtoClient import ClientDB as ProtoClient
 
 # MongoDB client
@@ -49,3 +49,192 @@ class AttendanceDB(ProtoClient):
         
         # Create a new node document, this will be inserted into the database.
         self.insert_data(primary_key_query, attendance_data)
+
+    def insert_many(self, attendence_history: list[Attendance]):
+        """ 
+        :fn: insert_many
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Inserts a list of attendance record into the database.
+        :param attendence_history: The list of attendance we're inserting 
+        """
+        # This is the query that we are going to use to find.
+        primary_key_query = None # { "node_id": attendence_history.node_id, "timestamp": attendence_history.timestamp }
+
+        # The list of values 
+        history_len = len(attendence_history)
+        history = [ 0 ] * history_len
+        
+        # For each record
+        i = 0
+        while i < history_len:
+            attendance = attendence_history[i]
+            history[i] = attendance.serialise()
+            i += 1
+        
+        # Insert all into the list 
+        self.collection.insert_many(history)
+
+    def get_frequencies(self, entries: list[dict]) -> dict:
+        """
+        :fn: get_frequencies
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Gets frequencies in the entries.
+        :return: Returns a dictionary of timestamps->hashes
+        """
+        # The mac address frequencies, the amount of times they appear.
+        freq = dict()
+
+        for entry in entries:
+            # Create an attendance from this.
+            attendance = Attendance()
+            attendance.deserialise(entry)
+
+            # We round the time to last 30 minutes because we want to track time like this.
+            timestamp = HistoricAttendance.roundToLast30Minutes(attendance.timestamp)
+            node_id = attendance.node_id
+            mac_addr = attendance.hash
+
+            # Check if the mac address exists. 
+            if timestamp in freq:
+                if mac_addr in freq[timestamp]:
+                    freq[timestamp][mac_addr] += 1
+                else:
+                    freq[timestamp][mac_addr] = 1
+            else:
+                freq[timestamp] = dict() 
+                freq[timestamp][mac_addr] = 1
+        return freq
+
+    def get_total_mac_occurances(self, freq: dict) -> dict:
+        """
+        :fn: get_total_mac_occurances
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Gets the amount of times mac addresses occur over several time period
+        :param freq: Frequency map, timestamp and the mac addresses packets that were captured
+        :return: Returns a dictionary of hashes
+        """
+        # Count how many times each of the mac addresses go over 4 half an hours.
+        macs_over_times = dict()
+        for ts in freq: 
+            # These are the mac addresses 
+            macs = freq[ts]
+
+            # Go through the mac address counted at this time
+            for mac in macs:
+                if mac in macs_over_times:
+                    macs_over_times[mac] += 1
+                else:
+                    macs_over_times[mac] = 1
+        return macs_over_times
+
+    def get_suspicious_macs(self, macs_over_times: dict) -> set:
+        """
+        :fn: get_suspicious_macs
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Gets the amount of macs which violate our rules!
+        :param macs_over_times: The mac addresses total occurances over different timestamps.
+        :return: Returns a dictionary of hashes
+        """
+        # If the mac has been in the count for over x amount of time, it will be considered suspicious and not count towards the full tally
+        suspicious_macs = set()
+        for mac in macs_over_times:
+            frequency = macs_over_times[mac]
+            if frequency > 4:
+                suspicious_macs.add(mac)
+
+    def calculate_total_unsuspicious_macs(self,  entries: list[dict], freq: dict, suspicious_macs: set) -> set:
+        """
+        :fn: calculate_total_unsuspicious_macs
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Get the amount of unsuspicious macs that we have.
+        :param entries: The entries of the database
+        :param freq: The frequency dict, lists timestamps to node_ids
+        :param suspicious_macs: The mac addresses we do not trust.
+        :return: Returns the nodes with the appropriate level of non-suspicious macs
+        """
+        nodes = dict()
+
+        # Add the frequencies 
+        for entry in entries:
+            # Create an attendance from this.
+            attendance = Attendance()
+            attendance.deserialise(entry)
+
+            # We round the time to last 30 minutes because we want to track time like this.
+            timestamp = HistoricAttendance.roundToLast30Minutes(attendance.timestamp)
+
+            # If the node exists in the dictionary, add to the freq of the timestamp
+            node_id = attendance.node_id
+            if not node_id in nodes:
+                nodes[node_id] = dict()
+
+            # Get all the macs in this address.
+            unique_macs = set(freq[timestamp])
+
+            # Get non suspicious macs
+            nonsus_macs = unique_macs - suspicious_macs
+
+            nodes[node_id][timestamp] = len(nonsus_macs)
+        return nodes
+
+    def convert_mac_accesses_to_history(self, nodes: dict) -> list[HistoricAttendance]:
+        """
+        :fn: convert_mac_accesses_to_history
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Get the history from a collection of node data
+        :return: Returns the nodes and the estimated populaton they have
+        """
+        # Create an array to send back 
+        history = [ ]
+
+        # For each node...
+        for node_id in nodes:
+            # Get the node 
+            node = Node(node_id)
+
+            # For each timestamp in that node.
+            for ts in nodes[node_id]:
+                # Get the frequency amount 
+                freq = nodes[node_id][ts]
+
+                # New Historic Attendance.
+                historic = HistoricAttendance(ts, node, freq)
+                history.append(historic)
+        return history
+
+    def squash(self) -> list[HistoricAttendance]:
+        """
+        :fn: squash
+        :date: 03/09/2025
+        :author: Cameron Sims
+        :brief: Summarises activity in the attendance collection, and creates various historic attedenance instances.
+        :return: Returns an array of "HistoricAttendance" instances.
+        """
+
+        # Get all entries in the collection.
+        entries = list(self.collection.find({}))
+
+         # The mac address frequencies, the amount of times they appear.
+        freq = self.get_frequencies(entries)
+
+        # Get the suspicious macs 
+        macs_over_times = self.get_total_mac_occurances(freq)
+        suspicious_macs = self.get_suspicious_macs(macs_over_times)
+
+        # This is the map of every node, every 30 mins.
+        nodes = self.calculate_total_unsuspicious_macs(entries, freq, suspicious_macs)
+
+        """
+        print('Suspicious macs:', [mac for mac in suspicious_macs])
+        print('Unsuspicious macs:')
+        for node_id in nodes: 
+            for timestamp in nodes[node_id]:
+                print(timestamp, nodes[node_id][timestamp])
+        """
+        return self.convert_mac_accesses_to_history(nodes)

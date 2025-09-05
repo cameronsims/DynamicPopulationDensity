@@ -14,21 +14,46 @@ class Sniffer:
     :date: 27/08/2025
     :author: Cameron Sims
     :brief: This class holds our database clients.
+    :param config_file: The config file that this sniffer is going to use.
     """
-    def __init__(self, node_id, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
+    def __init__(self, config_file: str): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
         """
         :fn: __init__
         :date: 27/08/2025
         :author: Cameron Sims
         :brief: Creates and initialises the sniffer and the tshark instance.
-        :param interface: The network interface to capture packets on.
-        :param output_file: The file to save the captured packets to.
+        :param node_id: The node id that this sniffer instance refers to
+        :param config_file: The file to configure this sniffer
         """
+        # Read the file 
+        self.load_config(config_file)
+
         # Assigns the interface and output file.
-        self.start_tshark(interface=interface, output_file=output_file)
+        self.start_tshark(interface=self.interface, output_file=self.output_file)
+
+    def load_config(self, config_file: str): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
+        """
+        :fn: load_config
+        :date: 05/09/2025
+        :author: Cameron Sims
+        :brief: Sets the config to a file
+        :param config_file: The config file that this sniffer is going to use.
+        """    
+        # Read the file 
+        from json import load as json_load
+        config = json_load(open(config_file))
+
+        # Read info from this config 
+        self.interface           = str (config['interface'])
+        self.output_file         = str (config['output_file'])
+        self.default_max_packets = int (config["max_packets"])
+
+        # This specific varaible is if we should use max packets or timeout
+        self.use_timeout         = bool(config['use_timeout'])
+        self.default_timeout     = int (config["timeout"])
 
         # This is a bit of self referential data, what node is this sniffer associated with?
-        self.node_id = node_id
+        self.node_id             = int (config['node_id'])
 
     def __del__(self):
         """
@@ -57,7 +82,7 @@ class Sniffer:
         self.interface = interface
         self.output_file = output_file
 
-    def start_sniffing(self, max_packets: int = 2500, timeout: int = 300):
+    def start_sniffing(self, max_packets: int = None, timeout: int = None):
         """
         :fn: start_sniffing
         :date: 27/08/2025
@@ -66,11 +91,23 @@ class Sniffer:
         :param max_packets: The maximum number of packets to capture before stopping.
         :param timeout: The maximum time to capture packets for, in seconds.
         """
+
+        # If we don't have anything for these...
+        if max_packets is None:
+            max_packets = self.default_max_packets
+        if timeout is None:
+            timeout = self.default_timeout
+
         # What do we iterate over? max_packets or timeout?
-        print(self.interface, self.output_file)
+        time_str = f"over {timeout} seconds" if self.use_timeout else f"for {max_packets} packets"
+        print(f"Sniffing over interface \"{self.interface}\" {time_str} placing in \"{self.output_file}\"")
         self.capture = pyshark.LiveCapture(interface=self.interface, output_file=self.output_file)
-        for packet in self.capture.sniff_continuously(packet_count=max_packets):
-            pass
+        
+        if self.use_timeout:
+            self.capture.sniff(timeout=timeout)
+        else:
+            for packet in self.capture.sniff_continuously(packet_count=max_packets):
+                pass
         # We have finished capturing packets, return to the function that called this.
                 
     
