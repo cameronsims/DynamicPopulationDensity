@@ -72,7 +72,7 @@ class HistoricAttendance:
             "total_entries": self.total_entries
         }
     
-    def roundToLast30Minutes(timestamp: datetime.datetime) -> datetime:
+    def roundToLast30Minutes(timestamp: datetime.datetime) -> datetime.datetime:
         """
         :fn: roundToLast30Minutes
         :date: 03/09/2025

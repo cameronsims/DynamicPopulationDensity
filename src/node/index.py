@@ -8,6 +8,8 @@ from src.structures.attendance import Attendance, HistoricAttendance
 from src.database.Client import DatabaseClient
 from src.node.Sniffer import Sniffer
 
+from datetime import datetime, timedelta
+
 def node_loop(sniffer: Sniffer, dbclient: DatabaseClient):
     """
     :fn: node_loop:
@@ -38,23 +40,27 @@ def node_main():
     """
 
     sniffer = Sniffer("./data/sniffingConfig.json")
-    dbclient = DatabaseClient("./data/dbLogin.json")
 
     # Clear the attendance client, we don't want any data from previous hours to intersect.
-    dbclient.attendance_client.clear()
+    dbclient = DatabaseClient("./data/dbLogin.json")
+    #dbclient.attendance_client.clear()
 
     # Enter the loop
-    try:
-        node_loop(sniffer, dbclient)
-    except KeyboardInterrupt:
-        print('Program exiting...')
+    #try:
+    #    node_loop(sniffer, dbclient)
+    #except KeyboardInterrupt:
+    #    print('Loop exiting...')
 
     # This should be decided by something else
-    # Squash the database
-    print("Squashing the Database Insertion.")
+    if True:
+        import json 
+        # Squash the database
+        print("Squashing the Database Insertion.")
 
-    
-    dbclient.convert_attendance_to_historic()
+        suspicion_file = json.load(open("./data/sniffingConfig.json"))
+        suspicion_factors = suspicion_file["suspicion"] 
+
+        dbclient.convert_attendance_to_historic(suspicion_factors)
 
     print("Node has finished execution!")
 

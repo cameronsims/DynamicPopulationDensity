@@ -99,12 +99,17 @@ class AttendanceDB(ProtoClient):
             # Check if the mac address exists. 
             if timestamp in freq:
                 if mac_addr in freq[timestamp]:
-                    freq[timestamp][mac_addr] += 1
+
+                    # Get the minimum and max of time 
+                    earliest = min(timestamp, freq[timestamp][mac_addr][0])
+                    latest = max(timestamp, freq[timestamp][mac_addr][1])
+                    frequency = freq[timestamp][mac_addr][2] + 1
+                    freq[timestamp][mac_addr] = (earliest, latest, frequency)
                 else:
-                    freq[timestamp][mac_addr] = 1
+                    freq[timestamp][mac_addr] = (timestamp, timestamp, 1)
             else:
                 freq[timestamp] = dict() 
-                freq[timestamp][mac_addr] = 1
+                freq[timestamp][mac_addr] = (timestamp, timestamp, 1)
         return freq
 
     def get_total_mac_occurances(self, freq: dict) -> dict:
@@ -130,21 +135,57 @@ class AttendanceDB(ProtoClient):
                     macs_over_times[mac] = 1
         return macs_over_times
 
-    def get_suspicious_macs(self, macs_over_times: dict) -> set:
+    def get_suspicious_macs(self, options: dict, mac_dict: dict, macs_over_times: dict) -> set:
         """
         :fn: get_suspicious_macs
         :date: 05/09/2025
         :author: Cameron Sims
         :brief: Gets the amount of macs which violate our rules!
+        :param options: The option for suspicious macs
+        :param mac_dict: The mac addresses and how many packets they had 
         :param macs_over_times: The mac addresses total occurances over different timestamps.
         :return: Returns a dictionary of hashes
         """
-        # If the mac has been in the count for over x amount of time, it will be considered suspicious and not count towards the full tally
+        # The suspicious macs
         suspicious_macs = set()
+
+        # If the mac has been in the count for over x amount of time, it will be considered suspicious and not count towards the full tally
         for mac in macs_over_times:
             frequency = macs_over_times[mac]
-            if frequency > 4:
+            if frequency > options['timestamp_occurances']:
                 suspicious_macs.add(mac)
+
+        # If the packets are detected outside of good hours...
+        time_early = int(options['time']['earliest'])
+        time_late = int(options['time']['latest'])
+
+        # If the packets suceed a certain amount of frequencies
+        for ts in mac_dict:
+            for mac in mac_dict[ts]:
+                # If we already are a suspicious mac address
+                mac_is_already_sus = mac in suspicious_macs
+
+                if not mac_is_already_sus:
+                    # Unpack the tuple
+                    tpl = mac_dict[ts][mac]
+                    early  = int(tpl[0].hour)
+                    late   = int(tpl[1].hour)
+                    amount = int(tpl[2])
+
+                    # If there is too many packets, or before early or after late 
+                    too_many_packets = amount >= options['max_packets']
+                    too_early = early < time_early
+                    too_late = late > time_late
+
+                    # add the mac address if it is suspicious
+                    if too_many_packets or too_early or too_late:
+                        suspicious_macs.add(mac)
+
+        # Give the set of suspicious macs...
+        return suspicious_macs
+
+
+
 
     def calculate_total_unsuspicious_macs(self,  entries: list[dict], freq: dict, suspicious_macs: set) -> set:
         """
@@ -208,12 +249,13 @@ class AttendanceDB(ProtoClient):
                 history.append(historic)
         return history
 
-    def squash(self) -> list[HistoricAttendance]:
+    def squash(self, options: dict) -> list[HistoricAttendance]:
         """
         :fn: squash
         :date: 03/09/2025
         :author: Cameron Sims
         :brief: Summarises activity in the attendance collection, and creates various historic attedenance instances.
+        :param options: The option for suspicious macs
         :return: Returns an array of "HistoricAttendance" instances.
         """
 
@@ -225,16 +267,15 @@ class AttendanceDB(ProtoClient):
 
         # Get the suspicious macs 
         macs_over_times = self.get_total_mac_occurances(freq)
-        suspicious_macs = self.get_suspicious_macs(macs_over_times)
+        suspicious_macs = self.get_suspicious_macs(options, freq, macs_over_times)
 
         # This is the map of every node, every 30 mins.
         nodes = self.calculate_total_unsuspicious_macs(entries, freq, suspicious_macs)
 
-        """
         print('Suspicious macs:', [mac for mac in suspicious_macs])
         print('Unsuspicious macs:')
         for node_id in nodes: 
             for timestamp in nodes[node_id]:
                 print(timestamp, nodes[node_id][timestamp])
-        """
+        
         return self.convert_mac_accesses_to_history(nodes)

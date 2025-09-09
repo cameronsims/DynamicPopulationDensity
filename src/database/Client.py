@@ -90,15 +90,16 @@ class DatabaseClient:
             collection = self.mongo_database[collection_name]
             collection.delete_many({})
 
-    def convert_attendance_to_historic(self):
+    def convert_attendance_to_historic(self, options: dict):
         """ 
         :fn: convert_attendance_to_historic
         :date: 05/09/2025
         :author: Cameron Sims
         :brief: Converts all the attendance to historic data
+        :param options: Factors for suspicion
         """
         # Get the squashed data.
-        squashed = self.attendance_client.squash()
+        squashed = self.attendance_client.squash(options)
 
         # Convert the squashed data to Historic Data client
         self.historic_client.insert_many(squashed)

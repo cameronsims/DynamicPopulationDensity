@@ -2,8 +2,17 @@
     "node_id": 1,
 
     "use_timeout": true,
-    "timeout": 60,
+    "timeout": 600,
     "max_packets": 5000,
     "interface": "Wi-Fi", 
-    "output_file": "./data/captures/capture.pcapng"
+    "output_file": "./data/captures/capture.pcapng",
+
+    "suspicion": {
+        "timestamp_occurances": 100,
+        "max_packets": 999999999,
+        "time": {
+            "earliest": 7,
+            "latest": 24
+        }
+    }
 }
