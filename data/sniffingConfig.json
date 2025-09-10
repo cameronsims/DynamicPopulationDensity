@@ -6,13 +6,4 @@
     "max_packets": 5000,
     "interface": "Wi-Fi", 
     "output_file": "./data/captures/capture.pcapng",
-
-    "suspicion": {
-        "timestamp_occurances": 100,
-        "max_packets": 999999999,
-        "time": {
-            "earliest": 7,
-            "latest": 24
-        }
-    }
 }

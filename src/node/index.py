@@ -38,7 +38,7 @@ def node_main():
     :author: Cameron Sims
     :brief: This function is the main entry point for the node side.
     """
-
+    # Sniffer that we are using.
     sniffer = Sniffer("./data/sniffingConfig.json")
 
     # Clear the attendance client, we don't want any data from previous hours to intersect.
@@ -46,21 +46,10 @@ def node_main():
     #dbclient.attendance_client.clear()
 
     # Enter the loop
-    #try:
-    #    node_loop(sniffer, dbclient)
-    #except KeyboardInterrupt:
-    #    print('Loop exiting...')
-
-    # This should be decided by something else
-    if True:
-        import json 
-        # Squash the database
-        print("Squashing the Database Insertion.")
-
-        suspicion_file = json.load(open("./data/sniffingConfig.json"))
-        suspicion_factors = suspicion_file["suspicion"] 
-
-        dbclient.convert_attendance_to_historic(suspicion_factors)
+    try:
+        node_loop(sniffer, dbclient)
+    except KeyboardInterrupt:
+        print('Loop exiting...')
 
     print("Node has finished execution!")
 

@@ -173,12 +173,11 @@ class AttendanceDB(ProtoClient):
                     amount = int(tpl[2])
 
                     # If there is too many packets, or before early or after late 
-                    too_many_packets = amount >= options['max_packets']
                     too_early = early < time_early
                     too_late = late > time_late
 
                     # add the mac address if it is suspicious
-                    if too_many_packets or too_early or too_late:
+                    if too_early or too_late:
                         suspicious_macs.add(mac)
 
         # Give the set of suspicious macs...
@@ -272,10 +271,12 @@ class AttendanceDB(ProtoClient):
         # This is the map of every node, every 30 mins.
         nodes = self.calculate_total_unsuspicious_macs(entries, freq, suspicious_macs)
 
+        """
         print('Suspicious macs:', [mac for mac in suspicious_macs])
         print('Unsuspicious macs:')
         for node_id in nodes: 
             for timestamp in nodes[node_id]:
                 print(timestamp, nodes[node_id][timestamp])
+        """
         
         return self.convert_mac_accesses_to_history(nodes)
