@@ -1,5 +1,6 @@
 {
     "timestamp_occurances": 100,
+    "min_packets": 25,
     "time": {
         "earliest": 7,
         "latest": 24

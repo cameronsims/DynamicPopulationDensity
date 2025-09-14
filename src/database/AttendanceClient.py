@@ -149,15 +149,17 @@ class AttendanceDB(ProtoClient):
         # The suspicious macs
         suspicious_macs = set()
 
-        # If the mac has been in the count for over x amount of time, it will be considered suspicious and not count towards the full tally
-        for mac in macs_over_times:
-            frequency = macs_over_times[mac]
-            if frequency > options['timestamp_occurances']:
-                suspicious_macs.add(mac)
-
         # If the packets are detected outside of good hours...
         time_early = int(options['time']['earliest'])
         time_late = int(options['time']['latest'])
+        min_packet_amount = int(options['min_packets'])
+        max_timestamp_occurances = int(options['timestamp_occurances'])
+
+        # If the mac has been in the count for over x amount of time, it will be considered suspicious and not count towards the full tally
+        for mac in macs_over_times:
+            frequency = macs_over_times[mac]
+            if frequency > max_timestamp_occurances:
+                suspicious_macs.add(mac)
 
         # If the packets suceed a certain amount of frequencies
         for ts in mac_dict:
@@ -176,15 +178,15 @@ class AttendanceDB(ProtoClient):
                     too_early = early < time_early
                     too_late = late > time_late
 
+                    # If it doesn't appear very much...
+                    too_little = amount < min_packet_amount
+
                     # add the mac address if it is suspicious
                     if too_early or too_late:
                         suspicious_macs.add(mac)
 
         # Give the set of suspicious macs...
         return suspicious_macs
-
-
-
 
     def calculate_total_unsuspicious_macs(self,  entries: list[dict], freq: dict, suspicious_macs: set) -> set:
         """

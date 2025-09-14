@@ -18,18 +18,10 @@ def server_create_node_history(dbclient: DatabaseClient):
     from src.structures.attendance import HistoricAttendance
 
     # Get our nodes and our history 
-    nodes = []
-    for node_data in dbclient.node_client.collection.find():
-        node =  Node()
-        node.deserialise(node_data)
-        nodes.append(node)
+    nodes = dbclient.node_client.get(Node)
 
     # Get history from the database.
-    history = []
-    for hist_data in dbclient.historic_client.collection.find():
-        record = HistoricAttendance()
-        record.deserialise(hist_data)
-        history.append(record)
+    history = dbclient.historic_client.get(HistoricAttendance)
     
     graph_client = Graphing()
     graph_client.create_node_total_activity(nodes, history).show()
@@ -46,14 +38,15 @@ def server_squash(suspicion_factors_fname: str, dbclient: DatabaseClient):
     :param suspicion_factors_fname: The file name that we are reading from.
     :param dbclient: The database client that we are reading from.
     """
-    from json import json_load
+    from json import load as json_load
     
     # Read the file
     suspicion_file = open(suspicion_factors_fname)
     suspicion_factors = json_load(suspicion_file)
 
     # Squash the database
-    dbclient.convert_attendance_to_historic(suspicion_factors)
+    if False:
+        dbclient.convert_attendance_to_historic(suspicion_factors)
 
 def server_main():
     """

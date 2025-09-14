@@ -1,9 +1,9 @@
 {
-    "node_id": 1,
+    "node_id": 2,
 
     "use_timeout": true,
-    "timeout": 600,
+    "timeout": 1200,
     "max_packets": 5000,
     "interface": "Wi-Fi", 
-    "output_file": "./data/captures/capture.pcapng",
+    "output_file": "./data/captures/capture.pcapng"
 }
