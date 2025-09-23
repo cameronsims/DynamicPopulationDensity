@@ -1,8 +1,9 @@
 {
     "node_id": 2,
+    "tshark_path": "C:\\Program Files\\Wireshark\\tshark.exe",
 
     "use_timeout": true,
-    "timeout": 1200,
+    "timeout": 30,
     "max_packets": 5000,
     "interface": "Wi-Fi", 
     "output_file": "./data/captures/capture.pcapng"

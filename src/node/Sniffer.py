@@ -14,9 +14,8 @@ class Sniffer:
     :date: 27/08/2025
     :author: Cameron Sims
     :brief: This class holds our database clients.
-    :param config_file: The config file that this sniffer is going to use.
     """
-    def __init__(self, config_file: str): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
+    def __init__(self, config_file: str, debug_mode: bool = False): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
         """
         :fn: __init__
         :date: 27/08/2025
@@ -24,8 +23,10 @@ class Sniffer:
         :brief: Creates and initialises the sniffer and the tshark instance.
         :param node_id: The node id that this sniffer instance refers to
         :param config_file: The file to configure this sniffer
+        :param debug_mode: Used for debugging pyshark/tshark
         """
         # Read the file 
+        self.debug_mode = debug_mode
         self.load_config(config_file)
 
         # Assigns the interface and output file.
@@ -46,6 +47,7 @@ class Sniffer:
         # Read info from this config 
         self.interface           = str (config['interface'])
         self.output_file         = str (config['output_file'])
+        self.tshark_path         = str (config['tshark_path'])
         self.default_max_packets = int (config["max_packets"])
 
         # This specific varaible is if we should use max packets or timeout
@@ -101,7 +103,13 @@ class Sniffer:
         # What do we iterate over? max_packets or timeout?
         time_str = f"over {timeout} seconds" if self.use_timeout else f"for {max_packets} packets"
         print(f"Sniffing over interface \"{self.interface}\" {time_str} placing in \"{self.output_file}\"")
-        self.capture = pyshark.LiveCapture(interface=self.interface, output_file=self.output_file)
+        self.capture = pyshark.LiveCapture(
+            interface=self.interface, 
+            output_file=self.output_file,
+            tshark_path=self.tshark_path)
+
+        if self.debug_mode:
+            self.capture.set_debug()
         
         if self.use_timeout:
             self.capture.sniff(timeout=timeout)
