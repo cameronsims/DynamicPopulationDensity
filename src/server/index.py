@@ -45,8 +45,11 @@ def server_squash(suspicion_factors_fname: str, dbclient: DatabaseClient):
     suspicion_factors = json_load(suspicion_file)
 
     # Squash the database
-    if False:
+    if True:
         dbclient.convert_attendance_to_historic(suspicion_factors)
+    
+        # Clear Attendance list.
+        dbclient.attendance_client.clear()
 
 def server_main():
     """
