@@ -12,15 +12,14 @@ class Node:
     :author: Cameron Sims
     :brief: This class is used to refer to a node that exists 
     """
-    def __init__(self, node_id: int = -1, node_latitude: float = 0.0, node_longitude: float = 0.0, node_description: str = None):
+    def __init__(self, node_id: str = None, location_id: str = None, node_description: str = None):
         """
         :fn: __init__
         :date: 22/08/2025
         :author: Cameron Sims
         :brief: Creates a node object.
         :param node_id: The ID of the node.
-        :param node_latitude: The latitude of the node.
-        :param node_longitude: The longitude of the node.
+        :param location_id: The location of the node.
         :param node_description: The description of the node, i.e.: the room name or location.
         """
         
@@ -30,8 +29,7 @@ class Node:
         self.ip = 1 # The last accessed IP address of the node.
         self.mac = 1 # The last accessed MAC address of the node.
         
-        self.latitude = node_latitude # Refers to the latitude of one node.
-        self.longitude = node_longitude # Refers to the longitude of the node.
+        self.location_id = location_id
         self.description = node_description # This is the description of the node, this is used to describe the node.
 
     def __hash__(self):
@@ -54,9 +52,8 @@ class Node:
         :param data: The data that we are reading through
         """
         # This is used to serialise the node, this is used to insert the node into the database.
-        self.id = data["id"]
-        self.latitude = data["latitude"]
-        self.longitude = data["longitude"]
+        self.id = str(data["_id"])
+        self.location_id = data["location_id"]
         self.description = data["description"]
     
     def serialise(self):
@@ -69,8 +66,6 @@ class Node:
         """
         # This is used to serialise the node, this is used to insert the node into the database.
         return {
-            "id": self.id,
-            "latitude": self.latitude,
-            "longitude": self.longitude,
+            "location_id": self.id,
             "description": self.description
         }

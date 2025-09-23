@@ -4,7 +4,6 @@
 :brief: This module defines how a client should interact with the database
 """
 
-
 class ClientDB:
     """
     :class: ClientDB 

@@ -55,7 +55,7 @@ class Sniffer:
         self.default_timeout     = int (config["timeout"])
 
         # This is a bit of self referential data, what node is this sniffer associated with?
-        self.node_id             = int (config['node_id'])
+        self.node_id             = str (config['node_id'])
 
     def __del__(self):
         """

@@ -3,9 +3,11 @@
 :date: 22/08/2025  
 :brief: This module creates our clients
 """
+from src.structures.node import Node
 from src.database.NodeClient import NodeDB as NodeClient
+from src.database.LocationClient import LocationDB as LocationClient
 from src.database.AttendanceClient import AttendanceDB as AttendanceClient
-from src.database.HistoricAttendanceClient import HistoricAttendanceDB as HistoricAttendanceClient
+from src.database.DensityClient import DensityDB as DensityClient
     
 class DatabaseClient:
     """
@@ -34,7 +36,7 @@ class DatabaseClient:
             self.collections = db_login['collections']
             
             # Create the database clients
-            self.node_client, self.attendance_client, self.historic_client = self.create_clients(self.collections)
+            self.node_client, self.location_client, self.attendance_client, self.historic_client = self.create_clients(self.collections)
 
     def __del__(self):
         """
@@ -66,25 +68,28 @@ class DatabaseClient:
         :author: Cameron Sims
         :brief: Creates instances of our clients.
         :param collections: The dictonary of collections from the database login file.
-        :return: A tuple of the node client, attendance client, and historic attendance client.
+        :return: A tuple of the node client, location client, attendance client, and historic attendance client.
         """
         # Create the node client 
         node_client = NodeClient(self.mongo_database, collections['nodes'])
+
+        # Create a client that deals with location
+        location_client = LocationClient(self.mongo_database, collections['locations'])
 
         # Create the attendance client 
         attendance_client = AttendanceClient(self.mongo_database, collections['attendance'])
        
         # Create the historic attendance client
-        historic_client = HistoricAttendanceClient(self.mongo_database, collections['historic_attendance'])
+        historic_client = DensityClient(self.mongo_database, collections['density'])
 
-        return (node_client, attendance_client, historic_client)
+        return (node_client, location_client, attendance_client, historic_client)
     
     def clear_clients(self):
         """ 
         :fn: clear_clients
         :date: 23/08/2025
         :author: Cameron Sims
-        :brief: Deletes all data within our clients
+        :brief: Deletes all data within our clients, please only use this for testing. Should probably be removed in final product
         """
         for collection_name in self.collections:
             collection = self.mongo_database[collection_name]
@@ -98,8 +103,12 @@ class DatabaseClient:
         :brief: Converts all the attendance to historic data
         :param options: Factors for suspicion
         """
+        # Get list of nodes
+        full_nodes = self.node_client.get(Node)
+
         # Get the squashed data.
-        squashed = self.attendance_client.squash(options)
+        squashed = self.attendance_client.squash(full_nodes, options)
+
 
         # Convert the squashed data to Historic Data client
-        self.historic_client.insert_many(squashed)
+        # self.historic_client.insert_many(squashed)

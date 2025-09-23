@@ -5,7 +5,7 @@
 """
 from src.database.Client import DatabaseClient as DBClient
 from src.structures.node import Node
-from src.structures.attendance import Attendance, HistoricAttendance
+from src.structures.density import Density
 from src.graph.Graphing import Graphing
 
 from random import randint as random_int
@@ -37,7 +37,7 @@ def create_nodes(amount:int = 4) -> list[Node]:
     # Iterate over the nodes
     i = 0
     while i < amount:
-        nodes[i] = Node(i+1, random_float(-90.00, 90.00), random_float(-180.00, 180.00), "Node " + str(i+1))
+        nodes[i] = Node(i+1, "68d2452a7fd04bdc0fb7636b", "Node " + str(i+1))
         i += 1
     return nodes
 
@@ -50,13 +50,13 @@ def create_nodes(amount:int = 4) -> list[Node]:
 :param amount: The number of historic attendance records to create.
 :return: Creates a list of nodes.
 """
-def create_history(nodes:list[Node], amount:int = 200) -> list[HistoricAttendance]:
+def create_history(nodes:list[Node], amount:int = 200) -> list[Density]:
     # Create records for amount of history
     history = [ 0 ] * amount
     # Iterate over the history
     i = 0
     while i < amount:
-        history[i] = HistoricAttendance(
+        history[i] = Density(
             f"2025-08-22T10:{i%60:02d}:00Z",
             nodes[random_int(0, len(nodes) - 1)], # Randomly select a node
             total_entries=random_int(1, 100) # Random number of entries

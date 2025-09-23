@@ -15,13 +15,12 @@ def server_create_node_history(dbclient: DatabaseClient):
     """
     from src.structures.node import Node
     from src.graph.Graphing import Graphing
-    from src.structures.attendance import HistoricAttendance
-
+    from src.structures.density import Density
     # Get our nodes and our history 
     nodes = dbclient.node_client.get(Node)
 
     # Get history from the database.
-    history = dbclient.historic_client.get(HistoricAttendance)
+    history = dbclient.historic_client.get(Density)
     
     graph_client = Graphing()
     graph_client.create_node_total_activity(nodes, history).show()
@@ -49,7 +48,7 @@ def server_squash(suspicion_factors_fname: str, dbclient: DatabaseClient):
         dbclient.convert_attendance_to_historic(suspicion_factors)
     
         # Clear Attendance list.
-        dbclient.attendance_client.clear()
+        # TODO: dbclient.attendance_client.clear()
 
 def server_main():
     """

@@ -1,5 +1,5 @@
 {
-    "node_id": 2,
+    "node_id": "68a9420948417c1831739d6a",
     "tshark_path": "C:\\Program Files\\Wireshark\\tshark.exe",
 
     "use_timeout": true,

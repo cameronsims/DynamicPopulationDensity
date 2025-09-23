@@ -3,17 +3,16 @@
 :date: 22/08/2025
 :brief: This module defines all important functions for interacting with the external database.
 """
-from src.structures.node import Node
-from src.structures.attendance import Attendance, HistoricAttendance 
+from src.structures.density import Density
 from src.database.ProtoClient import ClientDB as ProtoClient
 from pymongo import MongoClient
 
-class HistoricAttendanceDB(ProtoClient):
+class DensityDB(ProtoClient):
     """
     :class: NodeDB
     :date: 22/08/2025
     :author: Cameron Sims
-    :brief: This class handles interactions with the database for attendance, and relevent information. This information should be purged when formed into HistoricAttendance.
+    :brief: This class handles interactions with the database for attendance, and relevent information. This information should be purged when formed into Density.
     """
     def __init__(self, db_client: MongoClient, collection:str):
         """
@@ -28,10 +27,10 @@ class HistoricAttendanceDB(ProtoClient):
         self.db_client = db_client
 
         # This is the list of nodes, and their metadata.
-        self.collection = self.db_client['historic_attendance']
+        self.collection = self.db_client[collection]
 
 
-    def insert(self, attendance: HistoricAttendance):
+    def insert(self, attendance: Density):
         """ 
         :fn: insert
         :date: 22/08/2025
@@ -48,7 +47,7 @@ class HistoricAttendanceDB(ProtoClient):
         # Create a new node document, this will be inserted into the database.
         self.insert_data(primary_key_query, attendance_data)
 
-    def insert_many(self, attendence_history: list[HistoricAttendance]):
+    def insert_many(self, attendence_history: list[Density]):
         """ 
         :fn: insert_many
         :date: 05/09/2025

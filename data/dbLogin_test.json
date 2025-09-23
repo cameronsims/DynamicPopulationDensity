@@ -3,8 +3,9 @@
     "name": "DynamicPopulationDensity_test",
     
     "collections": {
-        "nodes": "nodes",
-        "historic_attendance": "historic_attendance",
-        "attendance": "attendance"
+        "nodes": "Nodes",
+        "locations": "Locations",
+        "density": "DensityHistory",
+        "attendance": "AttendanceHistory"
     }
 }

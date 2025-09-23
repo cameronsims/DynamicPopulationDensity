@@ -4,7 +4,8 @@
 :brief: This module defines all important functions for interacting with the external database.
 """
 from src.structures.node import Node
-from src.structures.attendance import Attendance, HistoricAttendance
+from src.structures.attendance import Attendance
+from src.structures.density import Density
 from src.database.ProtoClient import ClientDB as ProtoClient
 
 # MongoDB client
@@ -15,7 +16,7 @@ class AttendanceDB(ProtoClient):
     :class: NodeDB
     :date: 22/08/2025
     :author: Cameron Sims
-    :brief: This class handles interactions with the database for attendance, and relevent information. This information should be purged when formed into HistoricAttendance.
+    :brief: This class handles interactions with the database for attendance, and relevent information. This information should be purged when formed into Density.
     """
     def __init__(self, db_client: MongoClient, collection:str):
         """
@@ -42,7 +43,11 @@ class AttendanceDB(ProtoClient):
         :param attendance: The structure of the attendance we are inserting
         """
         # This is the query that we are going to use to find.
-        primary_key_query = { "hash": attendance.hash }
+        primary_key_query = {
+            "timestamp": attendance.timestamp,
+            "node_id": attendance.node_id,
+            "device_id": attendance.device_id 
+        }
 
         # This is the object that we are calling through
         attendance_data = attendance.serialise()
@@ -92,9 +97,9 @@ class AttendanceDB(ProtoClient):
             attendance.deserialise(entry)
 
             # We round the time to last 30 minutes because we want to track time like this.
-            timestamp = HistoricAttendance.roundToLast30Minutes(attendance.timestamp)
+            timestamp = Density.roundToLast30Minutes(attendance.timestamp)
             node_id = attendance.node_id
-            mac_addr = attendance.hash
+            mac_addr = attendance.device_id
 
             # Check if the mac address exists. 
             if timestamp in freq:
@@ -208,7 +213,7 @@ class AttendanceDB(ProtoClient):
             attendance.deserialise(entry)
 
             # We round the time to last 30 minutes because we want to track time like this.
-            timestamp = HistoricAttendance.roundToLast30Minutes(attendance.timestamp)
+            timestamp = Density.roundToLast30Minutes(attendance.timestamp)
 
             # If the node exists in the dictionary, add to the freq of the timestamp
             node_id = attendance.node_id
@@ -224,7 +229,7 @@ class AttendanceDB(ProtoClient):
             nodes[node_id][timestamp] = len(nonsus_macs)
         return nodes
 
-    def convert_mac_accesses_to_history(self, nodes: dict) -> list[HistoricAttendance]:
+    def convert_mac_accesses_to_history(self, full_nodes: list[Node], nodes: dict) -> list[Density]:
         """
         :fn: convert_mac_accesses_to_history
         :date: 05/09/2025
@@ -238,7 +243,11 @@ class AttendanceDB(ProtoClient):
         # For each node...
         for node_id in nodes:
             # Get the node 
-            node = Node(node_id)
+            node = None 
+            # Get the class instance of the node
+            for potential_node in full_nodes:
+                if potential_node.id == node_id:
+                    node = potential_node
 
             # For each timestamp in that node.
             for ts in nodes[node_id]:
@@ -246,18 +255,19 @@ class AttendanceDB(ProtoClient):
                 freq = nodes[node_id][ts]
 
                 # New Historic Attendance.
-                historic = HistoricAttendance(ts, node, freq)
+                historic = Density(ts, node, freq)
                 history.append(historic)
         return history
 
-    def squash(self, options: dict) -> list[HistoricAttendance]:
+    def squash(self, full_nodes: list[Node], options: dict) -> list[Density]:
         """
         :fn: squash
         :date: 03/09/2025
         :author: Cameron Sims
         :brief: Summarises activity in the attendance collection, and creates various historic attedenance instances.
+        :param full_nodes: A list of all nodes.
         :param options: The option for suspicious macs
-        :return: Returns an array of "HistoricAttendance" instances.
+        :return: Returns an array of "Density" instances.
         """
 
         # Get all entries in the collection.
@@ -281,4 +291,4 @@ class AttendanceDB(ProtoClient):
                 print(timestamp, nodes[node_id][timestamp])
         """
         
-        return self.convert_mac_accesses_to_history(nodes)
+        return self.convert_mac_accesses_to_history(full_nodes, nodes)

@@ -4,7 +4,7 @@
 :brief: This module initializes the client and sets up the main application.
 """
 
-from src.structures.attendance import Attendance, HistoricAttendance
+from src.structures.density import Density
 from src.database.Client import DatabaseClient
 from src.node.Sniffer import Sniffer
 

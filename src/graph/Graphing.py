@@ -4,7 +4,7 @@
 :brief: This this is how we will interact with matplotlib
 """
 from src.structures.node import Node
-from src.structures.attendance import Attendance, HistoricAttendance
+from src.structures.density import Density
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +26,7 @@ class Graphing:
         """
         pass 
 
-    def create_node_timeline(self, node: Node, history: list[HistoricAttendance]):
+    def create_node_timeline(self, node: Node, history: list[Density]):
         """
         :fn: create_node_timeline
         :date: 09/09/2025
@@ -61,7 +61,7 @@ class Graphing:
 
 
 
-    def create_node_total_activity(self, nodes: list[Node], history: list[HistoricAttendance]):
+    def create_node_total_activity(self, nodes: list[Node], history: list[Density]):
         """
         :fn: create_node_total_activity
         :date: 23/08/2025
@@ -84,11 +84,14 @@ class Graphing:
         for node in nodes:
             # Set the category 
             node_id_to_index[node.id] = i
-            categories[i] = "Node ID#" + str(node.id)
+            print(f"Node ID: \"{node.id}\"")
+            categories[i] = f"Node ID#{node.id}"
             i += 1
 
         # For each record we have.
+        print(len(node_id_to_index))
         for record in history:
+            #print(record.node_id, record.location_id)
             index = node_id_to_index[record.node_id]
             totals[index] += record.total_entries
 

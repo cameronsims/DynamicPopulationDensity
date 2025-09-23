@@ -1,23 +1,23 @@
 """
 :author: Cameron Sims
-:date: 22/08/2025
-:brief: This module defines all important functions for interacting with the external database.
+:date: 23/09/2025
+:brief: This module defines all important functions for interacting with the external database, specifically the "locations".
 """
-from src.structures.node import Node
+from src.structures.location import Location
 from src.database.ProtoClient import ClientDB as ProtoClient
 from pymongo import MongoClient
 
-class NodeDB(ProtoClient):
+class LocationDB(ProtoClient):
     """
-    :class: NodeDB
-    :date: 22/08/2025
+    :class: LocationDB
+    :date: 23/09/2025
     :author: Cameron Sims
-    :brief: This class handles interactions with the database for nodes, and their geolocational data.
+    :brief: This class handles interactions with the database for locations.
     """
     def __init__(self, db_client: MongoClient, collection: str):
         """
         :fn: __init__
-        :date: 22/08/2025
+        :date: 23/09/2025
         :author: Cameron Sims
         :brief: Initializes the NodeDB with a database client
         :param db_client: The database client to use for operations.
@@ -30,19 +30,19 @@ class NodeDB(ProtoClient):
         self.collection = self.db_client[collection]
 
 
-    def insert(self, node: Node):
+    def insert(self, location: Location):
         """ 
         :fn: insert
-        :date: 22/08/2025
+        :date: 23/09/2025
         :author: Cameron Sims
         :brief: Inserts a new node into the database.
-        :param node: The structure of the node we are inserting
+        :param location: The structure of the location we're inserting.
         """
         # This is the query that we are going to use to find.
-        primary_key_query = { "id": node.id }
+        primary_key_query = { "id": location.id }
 
         # This is the object that we are calling through
-        node_data = node.serialise()
+        local_data = location.serialise()
         
         # Create a new node document, this will be inserted into the database.
-        self.insert_data(primary_key_query, node_data)
+        self.insert_data(primary_key_query, local_data)
