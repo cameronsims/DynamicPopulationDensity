@@ -10,7 +10,7 @@ from src.node.Sniffer import Sniffer
 
 from datetime import datetime, timedelta
 
-def node_loop(sniffer: Sniffer, dbclient: DatabaseClient):
+def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int = -1):
     """
     :fn: node_loop:
     :date: 05/09/2025
@@ -18,8 +18,10 @@ def node_loop(sniffer: Sniffer, dbclient: DatabaseClient):
     :brief: This function is the loop for the node, this can be exited by CTRL+C
     :param sniffer: The sniffer instance we're using
     :param dbclient: The database client to read to.
+    :param max_loops: The maximum amount of loops to run, -1 for infinite.
     """
-    while True:
+    i = 0
+    while max_loops == -1 or i < max_loops:
         print("Start Sniffing...")
         sniffer.start_sniffing()
 
@@ -30,26 +32,30 @@ def node_loop(sniffer: Sniffer, dbclient: DatabaseClient):
         print("Inserting Packets into Database...")
         dbclient.attendance_client.insert_many(packets)
 
+        # Increment the loop amount
+        i += 1
 
-def node_main():
+
+def node_main(max_loops: int = -1):
     """
     :fn: node_main:
     :date: 05/09/2025
     :author: Cameron Sims
     :brief: This function is the main entry point for the node side.
+    :param max_loops: The maximum amount of loops to run, -1 for infinite.
     """
     # Sniffer that we are using.
     sniffer = Sniffer("./data/sniffingConfig.json")
 
     # Clear the attendance client, we don't want any data from previous hours to intersect.
     dbclient = DatabaseClient("./data/dbLogin.json")
-    #dbclient.attendance_client.clear()
+    dbclient.attendance_client.clear()
 
     # Enter the loop
     try:
-        node_loop(sniffer, dbclient)
+        node_loop(sniffer, dbclient, max_loops)
     except KeyboardInterrupt:
-        print('Loop exiting...')
+        print('Loop exiting due to Keyboard Interrupt...')
 
     print("Node has finished execution!")
 
@@ -57,4 +63,11 @@ def node_main():
 
 # This is the main entry point for the server side.
 if __name__ == "__main__":
-    node_main()
+    from sys import argv as sys_argv
+
+    # If we have a max loop argument, use it.
+    len_sys_argv = len(sys_argv)
+    max_loops = -1 if (len_sys_argv > 1) else int(sys_argv[1])
+
+    # Run the main function
+    node_main(len_sys_argv)

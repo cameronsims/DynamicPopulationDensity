@@ -84,12 +84,10 @@ class Graphing:
         for node in nodes:
             # Set the category 
             node_id_to_index[node.id] = i
-            print(f"Node ID: \"{node.id}\"")
             categories[i] = f"Node ID#{node.id}"
             i += 1
 
         # For each record we have.
-        print(len(node_id_to_index))
         for record in history:
             #print(record.node_id, record.location_id)
             index = node_id_to_index[record.node_id]

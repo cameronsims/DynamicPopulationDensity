@@ -11,18 +11,49 @@ This project is in Python3, please try to use the version "Python 3.12.10".
 To run the project the following external libraries and modules are required: 
 - pymongo
 ### How To Run
+### Config Files 
+This file has a few config files required, most of the config files are self explianatory, but the most important two are "data/suspicionFactors.json" and "data/sniffingConfig.json". 
+#### Windows
+**./data/sniffingConfig.json**
+```json title="./data/sniffingConfig.json"
+{
+    "node_id": <node id as it appears in the db should look like "68a9420948417c1831739d6a">,
+    "tshark_path": "C:\\Program Files\\Wireshark\\tshark.exe",
+
+    "use_timeout": true,
+    "timeout": 30,
+    "max_packets": 5000,
+    "interface": "Wi-Fi", 
+    "output_file": "./data/captures/capture.pcapng"
+}
+```
+
+#### Linux
+**./data/sniffingConfig.json**
+```json title="./data/sniffingConfig.json"
+{
+    "node_id": <node id as it appears in the db should look like "68a9420948417c1831739d6a">,
+    "tshark_path": "/bin/dumpcap",
+
+    "use_timeout": true,
+    "timeout": 30,
+    "max_packets": 5000,
+    "interface": "wlan0", 
+    "output_file": "./data/captures/capture.pcapng"
+}
+```
+
 ## Required Packages
 ```bash 
-# This method is for Bebian based Linux Systems only
+# To install the project, we need to run two commands. 
+# Please note, that if wireshark/tshark are not installed correctly pyshark will not run.
+
+# This method is for Debian based Linux Systems only (this includes RaspberryPI OS).
 # Note: Please allow non-superusers to capture packets!
 sudo apt install wireshark
 
-# Used for sniffing packet.s
-pip install pyshark
-
-# For documentation
-pip install sphinx
-pip install sphinx-rtd-theme
+# To simply install all the packages for the project.
+pip install -r requirements.txt
 ```
 ## GitHub Ettique 
 Please create your own branches and commit to them slowly. Once a feature is completed, provide a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) to merge the main code with the [master branch](https://github.com/cameronsims/DynamicPopulationDensity).<br/>Once a pull request has been made and you want it merged please email "cameronissacsims@gmail.com" to get my attention.
@@ -43,7 +74,7 @@ pip install sphinx-rtd-theme
 | Files | Files should contain all of the following information: :file::, :date::, :author::, :brief:: |
 | Functions | Functions should contain: :fn::, :date::, :author::, :brief::, :return::. As well as all parameters using the :param:: tag. |
 | Classes | Classes should contain all of the following: :class::/:struct::, :date::, :author::, :brief:: |
-| Variables | Variables should only require documentation if they are existing in a class or global. For this, only describing the variable above should be required. |
+| Variables | Variables should only require documentation if they are existing in a class or global. For this, only describing the variable in one line should be nessessary. |
 ## Writing Style
 ### Coupling / Cohesion
 All modules for the code should be contained within their own folders and should keep interaction between modules to an absolute minimum.

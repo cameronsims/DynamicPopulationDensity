@@ -106,7 +106,9 @@ class Sniffer:
         self.capture = pyshark.LiveCapture(
             interface=self.interface, 
             output_file=self.output_file,
-            tshark_path=self.tshark_path)
+            tshark_path=self.tshark_path, 
+            monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
+            )
 
         if self.debug_mode:
             self.capture.set_debug()
@@ -135,10 +137,18 @@ class Sniffer:
         self.file_capture = pyshark.FileCapture(output_file)
         self.file_capture.load_packets()
 
-        packets = [ 0 ] * len(self.file_capture)
+        len_file_capture = len(self.file_capture)
+        packets = [ 0 ] * len_file_capture
         i = 0
         for packet in self.file_capture:
-            packets[i] = self.convert_packet_to_attendance(packet)
+            # get the attendance instance of this packet...
+            attendance = self.convert_packet_to_attendance(packet)
+
+            # If we have space in the array, use it, otherwise append.
+            if i < len_file_capture:
+                packets[i] = attendance
+            else:
+                packets.append(attendance)
             i += 1
         return packets
     
@@ -150,17 +160,29 @@ class Sniffer:
         :brief: Converts a packet to an attendance record, suitable for database insertion.
         :param output_file: The file to read the captured packets from.
         """
-        from datetime import datetime
+
+        """
+            packet.frame_info.time: Sep 29, 2025 09:17:52.787352000 W. Australia Standard Time
+            packet.frame_info.time_epoch: 1759108672.787352000
+            Epoch time the packet was caught, in unix time and then in seconds.
+            
+            packet.frame_info.time_relative: 24.980908000
+            Time the packet was caught after we started sniffing.
+
+            packet.frame_info.time_delta: 0.000412000
+            Time difference between this packet and the previous packet.
+        """
+
+        # Packet information 
+        print("PLEASE NOTE: WE ARE STILL TESTING STRENGTH OF SINGAL. /src/node/Sniffer.py:177")
+        rrsi = None if (not 'radiotap' in packet) else packet.radiotap.dbm_antsignal # This is the received signal strength indicator of the packet, lower signals are weaker, higher signals are stronger.
+        
+        mac_addr = None if (not 'eth' in packet) else packet.eth.src
 
         # This is our attendance record
         attendance_record = Attendance(
-            # Timestamp, if we have a packet timestamp, use it.
-            packet.sniff_time,#datetime.now(),
-            # Node ID, if we have a node associated with this sniffer, add it.
-            self.node_id,
-            # If the Packet has a MAC Address, add it.
-            None if (not 'eth' in packet) else packet.eth.src)
-
-        timestamp = datetime.now()
+            packet.sniff_time, # Timestamp, if we have a packet timestamp, use it.
+            self.node_id, # Node ID, if we have a node associated with this sniffer, add it.
+            mac_addr) # If the Packet has a MAC Address, add it.
 
         return attendance_record

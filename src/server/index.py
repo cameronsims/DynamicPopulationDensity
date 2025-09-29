@@ -45,11 +45,8 @@ def server_squash(suspicion_factors_fname: str, dbclient: DatabaseClient):
 
     # Squash the database
     if True:
-        dbclient.convert_attendance_to_historic(suspicion_factors)
+        dbclient.convert_attendance_to_historic(suspicion_factors, False, True)
     
-        # Clear Attendance list.
-        # TODO: dbclient.attendance_client.clear()
-
 def server_main():
     """
     :fn: server_main:
@@ -57,7 +54,7 @@ def server_main():
     :author: Cameron Sims
     :brief: This function is the main entry point for the server side.
     """
-    dbclient = DatabaseClient("./data/dbLogin.json")
+    dbclient = DatabaseClient("./data/dbLogin_test.json")
 
     # Flatten the database.
     print("Squashing the Database Insertion.")

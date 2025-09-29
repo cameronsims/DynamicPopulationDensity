@@ -4,6 +4,7 @@
 :brief: This module creates our clients
 """
 from src.structures.node import Node
+from src.structures.density import Density
 from src.database.NodeClient import NodeDB as NodeClient
 from src.database.LocationClient import LocationDB as LocationClient
 from src.database.AttendanceClient import AttendanceDB as AttendanceClient
@@ -95,13 +96,16 @@ class DatabaseClient:
             collection = self.mongo_database[collection_name]
             collection.delete_many({})
 
-    def convert_attendance_to_historic(self, options: dict):
+    def convert_attendance_to_historic(self, options: dict, push_to_db: bool = False, clear_db: bool = False) -> list[Density]:
         """ 
         :fn: convert_attendance_to_historic
         :date: 05/09/2025
         :author: Cameron Sims
         :brief: Converts all the attendance to historic data
         :param options: Factors for suspicion
+        :param push_to_db: Do we put the database elements into the database?
+        :param clear_db: Do we clear the attendance database?
+        :return: Returns the list of vaues gained from the function. 
         """
         # Get list of nodes
         full_nodes = self.node_client.get(Node)
@@ -109,6 +113,11 @@ class DatabaseClient:
         # Get the squashed data.
         squashed = self.attendance_client.squash(full_nodes, options)
 
-
         # Convert the squashed data to Historic Data client
-        # self.historic_client.insert_many(squashed)
+        if push_to_db:
+            self.historic_client.insert_many(squashed)
+
+        if clear_db:
+            self.attendance_client.clear()
+        
+        return squashed
