@@ -67,7 +67,8 @@ if __name__ == "__main__":
 
     # If we have a max loop argument, use it.
     len_sys_argv = len(sys_argv)
-    max_loops = -1 if (len_sys_argv > 1) else int(sys_argv[1])
+    print(len_sys_argv, sys_argv)
+    max_loops = -1 if (len_sys_argv < 2) else int(sys_argv[1])
 
     # Run the main function
     node_main(len_sys_argv)
