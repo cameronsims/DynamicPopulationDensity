@@ -5,7 +5,7 @@
     "collections": {
         "nodes": "Nodes",
         "locations": "Locations",
-        "density": "DensityHistory_afterSquash",
+        "density": "DensityHistory",
         "attendance": "AttendanceHistory"
     }
 }

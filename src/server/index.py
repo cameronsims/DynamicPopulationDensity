@@ -54,11 +54,11 @@ def server_main():
     :author: Cameron Sims
     :brief: This function is the main entry point for the server side.
     """
-    dbclient = DatabaseClient("./data/dbLogin_test.json")
+    dbclient = DatabaseClient("./data/database/dbLogin_test.json")
 
     # Flatten the database.
     print("Squashing the Database Insertion.")
-    server_squash("./data/suspicionFactors.json", dbclient)
+    server_squash("./data/server/suspicionFactors.json", dbclient)
 
     # Create histories and graphs, move this somewhere else.
     server_create_node_history(dbclient)

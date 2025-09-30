@@ -95,7 +95,7 @@ def create(db_client: DBClient, node_amount:int=4, history_amount:int=200):
 """
 def make():
     # Create a database client
-    db_client = DBClient("./data/dbLogin_test.json")
+    db_client = DBClient("./data/database/dbLogin_test.json")
 
     clear (db_client) # Clear the database 
     create(db_client) # Create dummy data

@@ -10,14 +10,61 @@ This project is in Python3, please try to use the version "Python 3.12.10".
 ### Modules / Libraries
 To run the project the following external libraries and modules are required: 
 - pymongo
+- pyshark 
+### Virtual Environments and Setup 
+```bash
+# Please ensure we are in the "DynamicPopulationDensity" folder.
+# The path should look like the simple diagram below. 
+#
+# - DynamicPopulationDensity
+# | - data
+# | - scripts
+# | - src
+# | - .gitignore
+# | - readme.md
+# | - requirements.txt
+
+# Create a python virtual environment (venv)
+python3 -m venv venv
+source venv/bin/activate
+
+# This method is for Debian based Linux Systems only (this includes RaspberryPI OS).
+# Note: Please allow non-superusers to capture packets!
+sudo apt install wireshark
+
+# To simply install all the packages for the project.
+pip install -r requirements.txt
+
+# IF the above does not work, please install manually.
+pip install pymongo
+pip install pyshark
+
+# Deactivate virtual environment if required
+deactivate
+```
 ### How To Run
+#### Node 
+```bash
+# python -m src.node.index (Loop Amount, negative for infinite) (Push to Database? True for yes)
+python -m src.node.index -1 true
+
+# Alternatively, run
+./scripts/run_node.sh
+```
+#### Server
+```bash
+python -m src.server.index
+
+# Alternatively, run
+./scripts/run_server.sh
+```
 ### Config Files 
-This file has a few config files required, most of the config files are self explianatory, but the most important two are "data/suspicionFactors.json" and "data/sniffingConfig.json". 
+This file has a few config files required, most of the config files are self explianatory, but the most important two are "data/server/suspicionFactors.json" and "data/node/sniffingConfig.json". 
 #### Windows
-**./data/sniffingConfig.json**
-```json title="./data/sniffingConfig.json"
+**./data/node/sniffingConfig.json**
+```json title="./data/node/sniffingConfig.json"
 {
-    "node_id": <node id as it appears in the db should look like "68a9420948417c1831739d6a">,
+    "node_id": <node id as it appears in the db. should look like "68a9420948417c1831739d6a">,
     "tshark_path": "C:\\Program Files\\Wireshark\\tshark.exe",
 
     "use_timeout": true,
@@ -27,12 +74,11 @@ This file has a few config files required, most of the config files are self exp
     "output_file": "./data/captures/capture.pcapng"
 }
 ```
-
 #### Linux
-**./data/sniffingConfig.json**
-```json title="./data/sniffingConfig.json"
+**./data/node/sniffingConfig.json**
+```json title="./data/node/sniffingConfig.json"
 {
-    "node_id": <node id as it appears in the db should look like "68a9420948417c1831739d6a">,
+    "node_id": <node id as it appears in the db. should look like "68a9420948417c1831739d6a">,
     "tshark_path": "/bin/dumpcap",
 
     "use_timeout": true,
@@ -41,19 +87,6 @@ This file has a few config files required, most of the config files are self exp
     "interface": "wlan0", 
     "output_file": "./data/captures/capture.pcapng"
 }
-```
-
-## Required Packages
-```bash 
-# To install the project, we need to run two commands. 
-# Please note, that if wireshark/tshark are not installed correctly pyshark will not run.
-
-# This method is for Debian based Linux Systems only (this includes RaspberryPI OS).
-# Note: Please allow non-superusers to capture packets!
-sudo apt install wireshark
-
-# To simply install all the packages for the project.
-pip install -r requirements.txt
 ```
 ## GitHub Ettique 
 Please create your own branches and commit to them slowly. Once a feature is completed, provide a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) to merge the main code with the [master branch](https://github.com/cameronsims/DynamicPopulationDensity).<br/>Once a pull request has been made and you want it merged please email "cameronissacsims@gmail.com" to get my attention.
@@ -66,6 +99,9 @@ A style guide to writing these comments can be found on the [Sphinx Website](htt
 ```bash
 pip install sphinx
 pip install sphinx-rtd-theme
+
+# Alternatively, run
+./scripts/create_documentation.sh
 ```
 
 

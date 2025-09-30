@@ -1,0 +1,1 @@
+python -m src.node.index 1 true
