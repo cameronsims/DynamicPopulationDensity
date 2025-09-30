@@ -9,3 +9,7 @@ data/*.pcapng
 
 # Python Cache files
 src/*/__pycache__/
+
+
+# Node config files
+data/node/*.json
