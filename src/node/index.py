@@ -56,7 +56,7 @@ def node_main(max_loops: int, insert_into_db: bool):
 
     # Enter the loop
     try:
-        node_loop(sniffer, dbclient, max_loops)
+        node_loop(sniffer, dbclient, max_loops, insert_into_db)
     except KeyboardInterrupt:
         print('Loop exiting due to Keyboard Interrupt...')
 

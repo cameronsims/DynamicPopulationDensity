@@ -29,8 +29,6 @@ class Sniffer:
         self.debug_mode = debug_mode
         self.load_config(config_file)
 
-        self.first = True # TODO: Remove this
-
         # Assigns the interface and output file.
         self.start_tshark(interface=self.interface, output_file=self.output_file)
 
