@@ -4,10 +4,10 @@
 :brief: This module defines all important functions for interacting with the external database.
 """
 from src.structures.density import Density
-from src.database.ProtoClient import ClientDB as ProtoClient
+from src.database.protoclient import ClientDB as protoclient
 from pymongo import MongoClient
 
-class DensityDB(ProtoClient):
+class DensityDB(protoclient):
     """
     :class: NodeDB
     :date: 22/08/2025
