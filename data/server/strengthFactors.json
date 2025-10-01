@@ -1,0 +1,11 @@
+{
+    "include_null": true,
+    "bluetooth": {
+        "highest": -30,
+        "lowest": -55
+    },
+    "wifi": {
+        "highest": -30,
+        "lowest": -65
+    }
+}

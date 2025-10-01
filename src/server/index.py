@@ -16,6 +16,7 @@ def server_create_node_history(dbclient: DatabaseClient):
     from src.structures.node import Node
     from src.graph.Graphing import Graphing
     from src.structures.density import Density
+    
     # Get our nodes and our history 
     nodes = dbclient.node_client.get(Node)
 
@@ -28,13 +29,14 @@ def server_create_node_history(dbclient: DatabaseClient):
     for node in nodes:
         graph_client.create_node_timeline(node, history).show()
 
-def server_squash(suspicion_factors_fname: str, dbclient: DatabaseClient):
+def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, strength_factors_fname: str):
     """
     :fn: server_squash:
     :date: 10/09/2025
     :author: Cameron Sims
     :brief: This function squashes the database nerds and converts the attendnace to historic data
     :param suspicion_factors_fname: The file name that we are reading from.
+    :param strength_factors_fname: The file name that we are reading from.
     :param dbclient: The database client that we are reading from.
     """
     from json import load as json_load
@@ -43,9 +45,12 @@ def server_squash(suspicion_factors_fname: str, dbclient: DatabaseClient):
     suspicion_file = open(suspicion_factors_fname)
     suspicion_factors = json_load(suspicion_file)
 
+    strength_file = open(strength_factors_fname)
+    strength_factors = json_load(strength_file)
+
     # Squash the database
     if True:
-        dbclient.convert_attendance_to_historic(suspicion_factors, False, True)
+        dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, False, True)
     
 def server_main():
     """
@@ -58,7 +63,7 @@ def server_main():
 
     # Flatten the database.
     print("Squashing the Database Insertion.")
-    server_squash("./data/server/suspicionFactors.json", dbclient)
+    server_squash(dbclient, "./data/server/suspicionFactors.json", "./data/server/strengthFactors.json")
 
     # Create histories and graphs, move this somewhere else.
     server_create_node_history(dbclient)

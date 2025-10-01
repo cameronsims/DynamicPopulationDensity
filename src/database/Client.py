@@ -96,13 +96,14 @@ class DatabaseClient:
             collection = self.mongo_database[collection_name]
             collection.delete_many({})
 
-    def convert_attendance_to_historic(self, options: dict, push_to_db: bool = False, clear_db: bool = False) -> list[Density]:
+    def convert_attendance_to_historic(self, sus_options: dict, strength_options: dict, push_to_db: bool = False, clear_db: bool = False) -> list[Density]:
         """ 
         :fn: convert_attendance_to_historic
         :date: 05/09/2025
         :author: Cameron Sims
         :brief: Converts all the attendance to historic data
-        :param options: Factors for suspicion
+        :param sus_options: Factors for suspicion
+        :param strength_options: Factor for strength
         :param push_to_db: Do we put the database elements into the database?
         :param clear_db: Do we clear the attendance database?
         :return: Returns the list of vaues gained from the function. 
@@ -111,7 +112,7 @@ class DatabaseClient:
         full_nodes = self.node_client.get(Node)
 
         # Get the squashed data.
-        squashed = self.attendance_client.squash(full_nodes, options)
+        squashed = self.attendance_client.squash(full_nodes, sus_options, strength_options)
 
         # Convert the squashed data to Historic Data client
         if push_to_db:
