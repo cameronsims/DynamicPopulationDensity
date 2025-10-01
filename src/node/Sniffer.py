@@ -106,23 +106,26 @@ class Sniffer:
         packets_param_str = f"for {max_packets} packets"
         time_str = seconds_param_str if self.use_timeout else packets_param_str
         print(f"Sniffing over interface \"{self.interface}\" {time_str} placing in \"{self.output_file}\"")
+        
         self.capture = LiveCapture(
             interface=self.interface, 
             output_file=self.output_file,
-            tshark_path=self.tshark_path,
-            monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
+            tshark_path=self.tshark_path
+            #monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
         )
 
         if self.debug_mode:
             self.capture.set_debug()
         
-        if self.use_timeout:
-            self.capture.sniff(timeout=timeout)
-        else:
-            self.capture.sniff_continuously(packet_count=max_packets)
-
-        # We have finished capturing packets, return to the function that called this.
-                
+        try:
+            if self.use_timeout:
+                self.capture.sniff(timeout=timeout)
+            else:
+                self.capture.sniff_continuously(packet_count=max_packets)
+        finally:
+            # We have finished capturing packets, return to the function that called this.
+            self.capture.close()
+                    
     
     def get_packets_from_file(self, output_file: str = None)-> list[Attendance]:
         """
@@ -139,8 +142,8 @@ class Sniffer:
         # Create the file capture instance
         self.file_capture = FileCapture(
             input_file=output_file, 
-            use_json=True, 
-            include_raw=True, 
+            #use_json=True, 
+            #include_raw=True, 
             tshark_path=self.tshark_path)
         self.file_capture.load_packets()
 
