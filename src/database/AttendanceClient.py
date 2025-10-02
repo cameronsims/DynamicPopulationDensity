@@ -6,12 +6,12 @@
 from src.structures.node import Node
 from src.structures.attendance import Attendance
 from src.structures.density import Density
-from src.database.ProtoClient import ClientDB as ProtoClient
+from src.database.protoclient import ClientDB as protoclient
 
 # MongoDB client
 from pymongo import MongoClient
 
-class AttendanceDB(ProtoClient):
+class AttendanceDB(protoclient):
     """
     :class: NodeDB
     :date: 22/08/2025
@@ -80,12 +80,32 @@ class AttendanceDB(ProtoClient):
         # Insert all into the list 
         self.collection.insert_many(history)
 
-    def get_frequencies(self, entries: list[dict]) -> dict:
+    def should_ignore_attendance(self, strength_options: dict, attendance: Attendance) -> bool:
+        """
+        :fn: get_frequencies
+        :date: 01/10/2025
+        :author: Cameron Sims
+        :brief: Should we add this attendance to the frequency list?
+        :param strength_options: Options for including macs if they fit criteria
+        :param attendance: The attendance record we are checking
+        :return: Returns boolean to if this packet is worth including
+        """
+        if attendance.strength is not None:
+             # Check if it is within bounds...
+            if attendance.strength < int(strength_options['min_strength']):
+                return True
+        elif strength_options['include_null']:
+            return True
+        return False
+
+    def get_frequencies(self, entries: list[dict], strength_options: dict) -> dict:
         """
         :fn: get_frequencies
         :date: 05/09/2025
         :author: Cameron Sims
         :brief: Gets frequencies in the entries.
+        :param entries: The entries of the database
+        :param strength_options: Options for including macs if they fit criteria
         :return: Returns a dictionary of timestamps->hashes
         """
         # The mac address frequencies, the amount of times they appear.
@@ -96,15 +116,17 @@ class AttendanceDB(ProtoClient):
             attendance = Attendance()
             attendance.deserialise(entry)
 
+            # If the attendance has any strength option...
+            if self.should_ignore_attendance(strength_options, attendance)
+                continue
+
             # We round the time to last 30 minutes because we want to track time like this.
             timestamp = Density.roundToLast30Minutes(attendance.timestamp)
-            node_id = attendance.node_id
             mac_addr = attendance.device_id
 
             # Check if the mac address exists. 
             if timestamp in freq:
                 if mac_addr in freq[timestamp]:
-
                     # Get the minimum and max of time 
                     earliest = min(timestamp, freq[timestamp][mac_addr][0])
                     latest = max(timestamp, freq[timestamp][mac_addr][1])
@@ -138,6 +160,7 @@ class AttendanceDB(ProtoClient):
                     macs_over_times[mac] += 1
                 else:
                     macs_over_times[mac] = 1
+
         return macs_over_times
 
     def get_suspicious_macs(self, options: dict, mac_dict: dict, macs_over_times: dict) -> set:
@@ -259,14 +282,15 @@ class AttendanceDB(ProtoClient):
                 history.append(historic)
         return history
 
-    def squash(self, full_nodes: list[Node], options: dict) -> list[Density]:
+    def squash(self, full_nodes: list[Node], sus_options: dict, strength_options: dict) -> list[Density]:
         """
         :fn: squash
         :date: 03/09/2025
         :author: Cameron Sims
         :brief: Summarises activity in the attendance collection, and creates various historic attedenance instances.
         :param full_nodes: A list of all nodes.
-        :param options: The option for suspicious macs
+        :param sus_options: The option for suspicious macs
+        :param strength_options: Options for including macs if they fit criteria
         :return: Returns an array of "Density" instances.
         """
 
@@ -274,11 +298,11 @@ class AttendanceDB(ProtoClient):
         entries = list(self.collection.find({}))
 
          # The mac address frequencies, the amount of times they appear.
-        freq = self.get_frequencies(entries)
+        freq = self.get_frequencies(entries, strength_options)
 
         # Get the suspicious macs 
         macs_over_times = self.get_total_mac_occurances(freq)
-        suspicious_macs = self.get_suspicious_macs(options, freq, macs_over_times)
+        suspicious_macs = self.get_suspicious_macs(sus_options, freq, macs_over_times)
 
         # This is the map of every node, every 30 mins.
         nodes = self.calculate_total_unsuspicious_macs(entries, freq, suspicious_macs)

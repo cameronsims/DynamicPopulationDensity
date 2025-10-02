@@ -7,6 +7,7 @@
 from pyshark import LiveCapture, FileCapture
 from pyshark.packet.packet import Packet
 from src.structures.attendance import Attendance
+from src.structures.PacketType import PacketType
 
 class Sniffer:
     """
@@ -28,8 +29,6 @@ class Sniffer:
         # Read the file 
         self.debug_mode = debug_mode
         self.load_config(config_file)
-
-        self.first = True # TODO: Remove this
 
         # Assigns the interface and output file.
         self.start_tshark(interface=self.interface, output_file=self.output_file)
@@ -108,24 +107,26 @@ class Sniffer:
         packets_param_str = f"for {max_packets} packets"
         time_str = seconds_param_str if self.use_timeout else packets_param_str
         print(f"Sniffing over interface \"{self.interface}\" {time_str} placing in \"{self.output_file}\"")
+        
         self.capture = LiveCapture(
             interface=self.interface, 
             output_file=self.output_file,
-            tshark_path=self.tshark_path,
-            monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
+            tshark_path=self.tshark_path
+            #monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
         )
 
         if self.debug_mode:
             self.capture.set_debug()
         
-        if self.use_timeout:
-            self.capture.sniff(timeout=timeout)
-        else:
-            self.capture.sniff_continuously(packet_count=max_packets)
-
-        # We have finished capturing packets, return to the function that called this.
-                
-    
+        try:
+            if self.use_timeout:
+                self.capture.sniff(timeout=timeout)
+            else:
+                self.capture.sniff_continuously(packet_count=max_packets)
+        finally:
+            # We have finished capturing packets, return to the function that called this.
+            self.capture.close()
+           
     def get_packets_from_file(self, output_file: str = None)-> list[Attendance]:
         """
         :fn: get_packets_from_file
@@ -141,8 +142,8 @@ class Sniffer:
         # Create the file capture instance
         self.file_capture = FileCapture(
             input_file=output_file, 
-            use_json=True, 
-            include_raw=True, 
+            #use_json=True, 
+            #include_raw=True, 
             tshark_path=self.tshark_path)
         self.file_capture.load_packets()
 
@@ -160,7 +161,7 @@ class Sniffer:
                 packets.append(attendance)
             i += 1
         return packets
-    
+
     def is_packet_bluetooth(self, packet: Packet) -> bool:
         """
         :fn: is_packet_bluetooth
@@ -172,6 +173,25 @@ class Sniffer:
         """
         return ('btle' in packet)
     
+    def get_packet_type(self, packet: Packet) -> PacketType:
+        """
+        :fn: get_packet_type
+        :date: 01/10/2025
+        :author: Cameron Sims
+        :brief: The type of packet.
+        """
+        # If we have a bluetooth layer...
+        if self.is_packet_bluetooth(packet):
+            return PacketType.BLUETOOTH
+        # Else, if we're dealing with Wi-Fi/Ethernet...
+        elif 'eth' in packet:
+            return packet.eth.src # Ethernet Source
+        # Else if the packet has a "wlan" layer.
+        elif 'wlan' in packet:
+            return packet.wlan.sa # WLAN Source Address
+        # If we don't know what we have, return None.
+        return None
+
     def get_packet_mac_address(self, packet: Packet) -> str:
         """
         :fn: get_packet_mac_address
@@ -182,17 +202,37 @@ class Sniffer:
         :return: Returns the MAC address of the packet, whether it is Bluetooth, Wi-Fi or Ethernet.
         """
         # If we have a bluetooth layer...
-        if self.is_packet_bluetooth(packet):
+        packet_type = self.get_packet_type(packet)
+
+
+        if packet_type is PacketType.BLUETOOTH:
             return packet.blte.src # Bluetooth Source
-        # Else, if we're dealing with Wi-Fi/Ethernet...
-        elif 'eth' in packet:
+        elif packet_type is PacketType.ETHERNET:
             return packet.eth.src # Ethernet Source
-        # Else if the packet has a "wlan" layer.
-        elif 'wlan' in packet:
+        elif packet_type is PacketType.WIFI:
             return packet.wlan.sa # WLAN Source Address
+        
         # If we don't know what we have, return None.
         return None
-            
+    
+    def get_signal(self, packet: Packet) -> int | None:
+        """
+        :fn: get_signal
+        :date: 01/10/2025
+        :author: Cameron Sims
+        :brief: Gets the signal strength from a packet.
+        :param packet: The packet to get the signal strength from.
+        :return: Returns the signal strength of the packet.
+        """
+
+        # If the packet has radiotap data, not able to be picked up on Raspberry PI zeros
+        if 'radiotap' in packet:
+            return packet.radiotap.dbm_antsignal
+        # If the packet is bluetooth, we can always get strength of signals!
+        if self.is_packet_bluetooth(packet):
+            return packet.btcommon.dbm_antsignal #; rssi = packet.btle.rssi
+
+        return None
 
     
     def convert_packet_to_attendance(self, packet: Packet) -> dict:
@@ -204,35 +244,18 @@ class Sniffer:
         :param output_file: The file to read the captured packets from.
         """
 
-        """
-            packet.frame_info.time: Sep 29, 2025 09:17:52.787352000 W. Australia Standard Time
-            packet.frame_info.time_epoch: 1759108672.787352000
-            Epoch time the packet was caught, in unix time and then in seconds.
-            
-            packet.frame_info.time_relative: 24.980908000
-            Time the packet was caught after we started sniffing.
-
-            packet.frame_info.time_delta: 0.000412000
-            Time difference between this packet and the previous packet.
-        """
-
         # Packet information 
-        # - packet.radiotap.dbm_antsignal: Doesn't work with Raspberry PI Zero Ws
-
-        # Mac Address info...
         mac_addr = self.get_packet_mac_address(packet)
-
-        # If the packet is bluetooth, we can get strength of signals!
-        if self.is_packet_bluetooth(packet):
-            signal = packet.btcommon.dbm_antsignal
-            rssi = packet.btle.rssi
-            print(f'Packet \"{mac_addr}\":', signal, rssi)
+        packet_type = self.get_packet_type(packet)
+        signal = self.get_signal(packet)
         
         # This is our attendance record
         attendance_record = Attendance(
             packet.sniff_time, # Timestamp, if we have a packet timestamp, use it.
             self.node_id,      # Node ID, if we have a node associated with this sniffer, add it.
-            mac_addr           # If the Packet has a MAC Address, add it.
+            mac_addr,          # If the Packet has a MAC Address, add it.
+            signal,            # DBM signal, might be None
+            packet_type        # The type of packet (bluetooth/wifi/ethernet)
         )
 
         return attendance_record

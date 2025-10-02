@@ -4,10 +4,10 @@
 :brief: This module defines all important functions for interacting with the external database, specifically the "locations".
 """
 from src.structures.location import Location
-from src.database.ProtoClient import ClientDB as ProtoClient
+from src.database.protoclient import ClientDB as protoclient
 from pymongo import MongoClient
 
-class LocationDB(ProtoClient):
+class LocationDB(protoclient):
     """
     :class: LocationDB
     :date: 23/09/2025
