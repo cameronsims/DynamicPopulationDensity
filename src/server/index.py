@@ -29,7 +29,7 @@ def server_create_node_history(dbclient: DatabaseClient):
     for node in nodes:
         graph_client.create_node_timeline(node, history).show()
 
-def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, strength_factors_fname: str):
+def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, strength_factors_fname: str, push_to_db: bool, clear_db: bool):
     """
     :fn: server_squash:
     :date: 10/09/2025
@@ -38,6 +38,8 @@ def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, streng
     :param suspicion_factors_fname: The file name that we are reading from.
     :param strength_factors_fname: The file name that we are reading from.
     :param dbclient: The database client that we are reading from.
+    :param push_to_db: Do we put the database elements into the database?
+    :param clear_db: Do we clear the attendance database?
     """
     from json import load as json_load
     
@@ -50,27 +52,40 @@ def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, streng
 
     # Squash the database
     if True:
-        dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, False, True)
+        dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, push_to_db, clear_db)
     
-def server_main():
+def server_main(push_to_db: bool, clear_db: bool):
     """
     :fn: server_main:
     :date: 22/08/2025
     :author: Cameron Sims
     :brief: This function is the main entry point for the server side.
+    :param push_to_db: Do we put the database elements into the database?
+    :param clear_db: Do we clear the attendance database?
     """
     dbclient = DatabaseClient("./data/database/dbLogin_test.json")
 
     # Flatten the database.
     print("Squashing the Database Insertion.")
-    server_squash(dbclient, "./data/server/suspicionFactors.json", "./data/server/strengthFactors.json")
+    server_squash(dbclient, "./data/server/suspicionFactors.json", "./data/server/strengthFactors.json", push_to_db, clear_db)
 
     # Create histories and graphs, move this somewhere else.
-    server_create_node_history(dbclient)
+    if False:
+        server_create_node_history(dbclient)
    
 
 
 # This is the main entry point for the server side.
 if __name__ == "__main__":
+
+    # These are all values that mean yes in terminal speak.
+    truthy_answers = ['true', '1', 't', 'y', 'yes']
+
+    # If we have a max loop argument, use it.
+    from sys import argv as sys_argv
+    len_sys_argv = len(sys_argv)
+    insert_db = True if (len_sys_argv < 2) else (sys_argv[1].lower() in truthy_answers)
+    clear_db  = True if (len_sys_argv < 3) else (sys_argv[2].lower() in truthy_answers)
+
     # Run the main server loop
-    server_main()
+    server_main(insert_db, clear_db)

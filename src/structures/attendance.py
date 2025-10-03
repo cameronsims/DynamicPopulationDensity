@@ -67,6 +67,7 @@ class Attendance:
         self.node_id   = data["node_id"]
         self.device_id = data["device_id"]
         self.strength  = None if ("strength"  not in data) else data["strength"]
+        self.packet_type = PacketType.NONE if ("packet_type" not in data) else PacketType(data["packet_type"])
 
     def serialise(self) -> dict:
         """
@@ -81,5 +82,6 @@ class Attendance:
             "timestamp": self.timestamp,
             "node_id": self.node_id,
             "device_id": self.device_id,
-            "strength": self.strength   
+            "strength": self.strength,
+            "packet_type": self.packet_type.value
         }

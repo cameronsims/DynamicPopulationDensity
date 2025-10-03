@@ -185,12 +185,12 @@ class Sniffer:
             return PacketType.BLUETOOTH
         # Else, if we're dealing with Wi-Fi/Ethernet...
         elif 'eth' in packet:
-            return packet.eth.src # Ethernet Source
+            return PacketType.ETHERNET # Ethernet Source
         # Else if the packet has a "wlan" layer.
         elif 'wlan' in packet:
-            return packet.wlan.sa # WLAN Source Address
+            return PacketType.WIFI # WLAN Source Address
         # If we don't know what we have, return None.
-        return None
+        return PacketType.NONE
 
     def get_packet_mac_address(self, packet: Packet) -> str:
         """
@@ -203,7 +203,6 @@ class Sniffer:
         """
         # If we have a bluetooth layer...
         packet_type = self.get_packet_type(packet)
-
 
         if packet_type is PacketType.BLUETOOTH:
             return packet.blte.src # Bluetooth Source
@@ -228,6 +227,7 @@ class Sniffer:
         # If the packet has radiotap data, not able to be picked up on Raspberry PI zeros
         if 'radiotap' in packet:
             return packet.radiotap.dbm_antsignal
+        
         # If the packet is bluetooth, we can always get strength of signals!
         if self.is_packet_bluetooth(packet):
             return packet.btcommon.dbm_antsignal #; rssi = packet.btle.rssi
@@ -245,8 +245,8 @@ class Sniffer:
         """
 
         # Packet information 
-        mac_addr = self.get_packet_mac_address(packet)
         packet_type = self.get_packet_type(packet)
+        mac_addr = self.get_packet_mac_address(packet)
         signal = self.get_signal(packet)
         
         # This is our attendance record

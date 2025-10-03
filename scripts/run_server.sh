@@ -1,1 +1,1 @@
-python -m src.server.index
+python -m src.server.index true true

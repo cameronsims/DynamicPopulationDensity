@@ -96,13 +96,18 @@ class AttendanceDB(protoclient):
         :param attendance: The attendance record we are checking
         :return: Returns boolean to if this packet is worth including
         """
+        from src.structures.PacketType import PacketType
+
         if attendance.strength is not None:
+            # Find the bounds.
+            key_type = 'wifi' if (attendance.packet_type is PacketType.WIFI) else 'bluetooth'
+            maximum_strength = int(strength_options[key_type]['highest'])
+            minimum_strength = int(strength_options[key_type]['lowest'])
+
              # Check if it is within bounds...
-            if attendance.strength < int(strength_options['min_strength']):
-                return True
-        elif strength_options['include_null']:
-            return True
-        return False
+            return (attendance.strength < minimum_strength)
+        
+        return strength_options['include_null']
 
     def get_frequencies(self, entries: list[dict], strength_options: dict) -> dict:
         """
@@ -135,7 +140,7 @@ class AttendanceDB(protoclient):
                 if mac_addr in freq[timestamp]:
                     # Get the minimum and max of time 
                     earliest = min(timestamp, freq[timestamp][mac_addr][0])
-                    latest = max(timestamp, freq[timestamp][mac_addr][1])
+                    latest   = max(timestamp, freq[timestamp][mac_addr][1])
                     frequency = freq[timestamp][mac_addr][2] + 1
                     freq[timestamp][mac_addr] = (earliest, latest, frequency)
                 else:
@@ -143,6 +148,7 @@ class AttendanceDB(protoclient):
             else:
                 freq[timestamp] = dict() 
                 freq[timestamp][mac_addr] = (timestamp, timestamp, 1)
+
         return freq
 
     def get_total_mac_occurances(self, freq: dict) -> dict:
@@ -250,12 +256,17 @@ class AttendanceDB(protoclient):
                 nodes[node_id] = dict()
 
             # Get all the macs in this address.
-            unique_macs = set(freq[timestamp])
+            
+            # Show the set
+            if timestamp in freq:
+                # These are the unique macs at this timestamp
+                unique_macs = set(freq[timestamp])
 
-            # Get non suspicious macs
-            nonsus_macs = unique_macs - suspicious_macs
+                # Get non suspicious macs
+                nonsus_macs = unique_macs - suspicious_macs
 
-            nodes[node_id][timestamp] = len(nonsus_macs)
+                nodes[node_id][timestamp] = len(nonsus_macs)
+
         return nodes
 
     def convert_mac_accesses_to_history(self, full_nodes: list[Node], nodes: dict) -> list[Density]:
@@ -313,12 +324,10 @@ class AttendanceDB(protoclient):
         # This is the map of every node, every 30 mins.
         nodes = self.calculate_total_unsuspicious_macs(entries, freq, suspicious_macs)
 
-        """
         print('Suspicious macs:', [mac for mac in suspicious_macs])
         print('Unsuspicious macs:')
         for node_id in nodes: 
             for timestamp in nodes[node_id]:
                 print(timestamp, nodes[node_id][timestamp])
-        """
         
         return self.convert_mac_accesses_to_history(full_nodes, nodes)

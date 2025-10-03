@@ -52,7 +52,6 @@ def node_main(max_loops: int, insert_into_db: bool):
 
     # Clear the attendance client, we don't want any data from previous hours to intersect.
     dbclient = DatabaseClient("./data/database/dbLogin.json")
-    dbclient.attendance_client.clear()
 
     # Enter the loop
     try:
