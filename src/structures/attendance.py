@@ -32,7 +32,7 @@ class Attendance:
         self.packet_type = packet_type
 
         #  If the node_id is a node object...
-        if type(node) == str:
+        if type(node) == Node:
             self.node_id = -1 if node is None else node.id
         # If we only have a node id...
         else: 

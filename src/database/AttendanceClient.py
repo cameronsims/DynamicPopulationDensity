@@ -68,6 +68,12 @@ class AttendanceDB(protoclient):
 
         # The list of values 
         history_len = len(attendence_history)
+
+        # If there is no history...
+        if history_len < 1:
+            print('Warning: There are no attendnace records to insert.')
+            return
+
         history = [ 0 ] * history_len
         
         # For each record
@@ -117,7 +123,7 @@ class AttendanceDB(protoclient):
             attendance.deserialise(entry)
 
             # If the attendance has any strength option...
-            if self.should_ignore_attendance(strength_options, attendance)
+            if self.should_ignore_attendance(strength_options, attendance):
                 continue
 
             # We round the time to last 30 minutes because we want to track time like this.
