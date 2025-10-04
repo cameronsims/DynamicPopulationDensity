@@ -56,6 +56,51 @@ pip install pyshark
 deactivate
 ```
 
+### Running Shell Script
+
+```bash
+# Before executing a script, ensure it has executable permissions:
+chmod +x examplescript.sh
+```
+
+### Connecting to Murdoch's Ubuntu Virtual Machine
+
+To access Murdoch's Virtual Machine, each device must first connect to Murdoch's VPN.
+Currently, only one device can be connected to the VPN at a time.
+
+### How To Connect to Murdoch's VPN
+
+```bash
+# Install OpenConnect on a Linux device
+./scripts/install_vpn.sh
+
+# Start the VPN connection on a Linux or macOS device if using OpenConnect
+./scripts/connect_murdoch_vpn.sh
+```
+
+### How To Log In to Murdoch's Virtual Machine
+
+From a terminal, run the following command and enter the password provided by Dan Wu:
+
+```bash
+ssh it08@10.51.33.30
+```
+
+### How To Log Out from Murdoch's Virtual Machine
+
+In the same terminal session used for SSH, run:
+
+```bash
+logout
+```
+
+### How To Disconnect from Murdoch's VPN
+
+```bash
+# Stop the VPN connection if used OpenConnect
+./scripts/disconnect_murdoch_vpn.sh
+```
+
 ### How To Run
 
 #### Node
@@ -121,7 +166,7 @@ This file has a few config files required, most of the config files are self exp
 
 ```json title="./data/node/sniffingConfig.json"
 {
-  "node_id": "68a9420948417c1831739d6a",
+  "node_id": <node id as it appears in the db. should look like "68a9420948417c1831739d6a">,
   "tshark_path": "/opt/homebrew/bin/tshark",
 
   "use_timeout": true,
