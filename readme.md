@@ -80,10 +80,10 @@ Currently, only one device can be connected to the VPN at a time.
 
 ### How To Log In to Murdoch's Virtual Machine
 
-From a terminal, run the following command and enter the password provided by Dan Wu:
+From a terminal, run the following command and enter the password provided:
 
 ```bash
-ssh it08@10.51.33.30
+ssh \<enter computer name\>@\<enter ip address\>
 ```
 
 ### How To Log Out from Murdoch's Virtual Machine
