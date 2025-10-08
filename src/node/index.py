@@ -7,6 +7,10 @@
 from src.database.Client import DatabaseClient
 from src.node.Sniffer import Sniffer
 
+NODE_INFO_FNAME = "./data/node/nodeInfo.json"
+SNIFFING_FNAME  = "./data/node/sniffingConfig.json"
+DBLOGIN_FNAME   = "./data/database/dbLogin.json"
+
 def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert_into_db: bool):
     """
     :fn: node_loop:
@@ -48,18 +52,27 @@ def node_main(max_loops: int, insert_into_db: bool):
     :param insert_into_db: Boolean, should we add the packets we read into the database? (Should be True in production!)
     """
     # Sniffer that we are using.
-    sniffer = Sniffer("./data/node/sniffingConfig.json")
+    sniffer = Sniffer(SNIFFING_FNAME, NODE_INFO_FNAME)
+
+    from pymongo.errors import ServerSelectionTimeoutError
+    from colorama import Fore, Back, Style
+
+    successfully_exited = True
 
     # Clear the attendance client, we don't want any data from previous hours to intersect.
-    dbclient = DatabaseClient("./data/database/dbLogin.json")
-
-    # Enter the loop
     try:
+        dbclient = DatabaseClient(DBLOGIN_FNAME)
+
+        # Enter the loop
         node_loop(sniffer, dbclient, max_loops, insert_into_db)
+    except ServerSelectionTimeoutError as e:
+        print(f"{Back.RED}Error: Cannot find the server, are you sure you're connected and the MongoDB is at \"{dbclient.ip_address}\"{Style.RESET_ALL}")
+        successfully_exited = False
     except KeyboardInterrupt:
         print('Loop exiting due to Keyboard Interrupt...')
 
-    print("Node has finished execution!")
+    colour_code = f"{Fore.GREEN}{Back.RESET}" if successfully_exited else f"{Fore.RED}{Back.RESET}"
+    print(f"{colour_code}Node has finished execution!{Style.RESET_ALL}")
 
     
 

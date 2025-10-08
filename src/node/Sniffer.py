@@ -16,26 +16,42 @@ class Sniffer:
     :author: Cameron Sims
     :brief: This class holds our database clients.
     """
-    def __init__(self, config_file: str, debug_mode: bool = False): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
+    def __init__(self, sniff_config_file: str, node_config_file: str, debug_mode: bool = False): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
         """
         :fn: __init__
         :date: 27/08/2025
         :author: Cameron Sims
         :brief: Creates and initialises the sniffer and the tshark instance.
         :param node_id: The node id that this sniffer instance refers to
-        :param config_file: The file to configure this sniffer
+        :param sniff_config_file: The file to configure this sniffer
+        :param node_config_file: The file to configure the node info that this sniffer belongs to.
         :param debug_mode: Used for debugging pyshark/tshark
         """
         # Read the file 
         self.debug_mode = debug_mode
-        self.load_config(config_file)
+        self.load_node_config(node_config_file)
+        self.load_sniff_config(sniff_config_file)
 
         # Assigns the interface and output file.
         self.start_tshark(interface=self.interface, output_file=self.output_file)
 
-    def load_config(self, config_file: str): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
+    def load_node_config(self, config_file: str):
         """
-        :fn: load_config
+        :fn: load_node_config
+        :date: 08/10/2025
+        :author: Cameron Sims
+        :brief: Sets the metadata for what node this sniffer belongs to.
+        :param config_file: The config file that this node is going to use.
+        """ 
+        from json import load as json_load
+        config = json_load(open(config_file))
+
+        # This is a bit of self referential data, what node is this sniffer associated with?
+        self.node_id             = str (config['node_id']) 
+
+    def load_sniff_config(self, config_file: str): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
+        """
+        :fn: load_sniff_config
         :date: 05/09/2025
         :author: Cameron Sims
         :brief: Sets the config to a file
@@ -55,8 +71,7 @@ class Sniffer:
         self.use_timeout         = bool(config['use_timeout'])
         self.default_timeout     = int (config["timeout"])
 
-        # This is a bit of self referential data, what node is this sniffer associated with?
-        self.node_id             = str (config['node_id'])
+        
 
     def __del__(self):
         """

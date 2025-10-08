@@ -31,6 +31,7 @@ class DatabaseClient:
         with open(login_file, "r") as db_loginFile:
             # Read the JSON file, 
             db_login = json_load(db_loginFile)
+            self.ip_address = db_login['ip']
 
             # Login.
             self.create_mongo_client(db_login)
