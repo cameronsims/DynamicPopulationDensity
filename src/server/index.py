@@ -5,6 +5,10 @@
 """
 from src.database.Client import DatabaseClient
 
+DBLOGIN_FNAME    = "./data/database/dbLogin.json"
+SUSFACTORS_FNAME = "./data/server/suspicionFactors.json"
+STRFACTORS_FNAME = "./data/server/strengthFactors.json"
+
 def server_create_node_history(dbclient: DatabaseClient): 
     """
     :fn: server_create_node_history:
@@ -80,8 +84,8 @@ def server_main(push_to_db: bool, clear_db: bool):
     """
     from threading import Thread
 
-    dbclient = DatabaseClient("./data/database/dbLogin_test.json")
-    squash_args = dbclient, "./data/server/suspicionFactors.json", "./data/server/strengthFactors.json", push_to_db, clear_db
+    dbclient = DatabaseClient(DBLOGIN_FNAME)
+    squash_args = dbclient, SUSFACTORS_FNAME, STRFACTORS_FNAME, push_to_db, clear_db
 
     # Flatten the database.
     thread_squash = Thread(target=server_squash, args=squash_args)
