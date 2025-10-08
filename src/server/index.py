@@ -59,19 +59,9 @@ def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, streng
     print("Squashing the Database Insertion.")
     while True:
         dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, push_to_db, clear_db)
-
+        
         # Sleep for however long.
         time_sleep(172800)
-    
-def server_django():
-    """
-    :fn: server_django:
-    :date: 08/10/2025
-    :author: Cameron Sims
-    :brief: Runs the server-side webserver.
-    """
-    while True:
-        pass
 
 def server_main(push_to_db: bool, clear_db: bool):
     """
@@ -82,17 +72,11 @@ def server_main(push_to_db: bool, clear_db: bool):
     :param push_to_db: Do we put the database elements into the database?
     :param clear_db: Do we clear the attendance database?
     """
-    from threading import Thread
 
     dbclient = DatabaseClient(DBLOGIN_FNAME)
-    squash_args = dbclient, SUSFACTORS_FNAME, STRFACTORS_FNAME, push_to_db, clear_db
 
     # Flatten the database.
-    thread_squash = Thread(target=server_squash, args=squash_args)
-    thread_django = Thread(target=server_django, args=())
-
-    thread_squash.start()
-    thread_django.start()
+    server_squash(dbclient, SUSFACTORS_FNAME, STRFACTORS_FNAME, push_to_db, clear_db)
     
     # Create histories and graphs, move this somewhere else.
     if False:
