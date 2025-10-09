@@ -12,6 +12,13 @@ Dynamic Population Density is a project for the Murdoch University unit "ICT302 
 
 The project is assumed to be running off of a Raspberry PI, hence ensuring that you are running off of Raspberry Pi OS (Linux Debian) is essential.
 
+### Operating System
+
+This project is designed and deployed on Linux-based distributions:
+
+- **Node(s):** Running on `Raspberry Pi OS (Raspbian) Bookworm Lite`
+- **Server:** Running on `Ubuntu Server`
+
 ### Programming Language
 
 This project is in Python3, please try to use the version "Python 3.12.10".
@@ -83,7 +90,7 @@ Currently, only one device can be connected to the VPN at a time.
 From a terminal, run the following command and enter the password provided:
 
 ```bash
-ssh \<enter computer name\>@\<enter ip address\>
+ssh \<enter computer name\>@\<enter ip addres\>
 ```
 
 ### How To Log Out from Murdoch's Virtual Machine
@@ -100,6 +107,90 @@ logout
 # Stop the VPN connection if used OpenConnect
 ./scripts/disconnect_murdoch_vpn.sh
 ```
+
+### Configuring and Setting Up MongoDB on a Linux Operating System For This Project
+
+To start collecting data, you’ll first need to set up a database.  
+This project uses **MongoDB** as the chosen database system.
+
+For setup, we assume you are using a Linux distribution such as **Ubuntu** or **Debian**, as most of the commands in the provided shell script are designed for these environments and are specifically configured for **MongoDB 8.0**.
+
+In the `scripts` folder, you’ll find two relevant scripts for this section:
+
+```bash
+- ./scripts/setup_run_mongodb_firewall.sh
+- ./scripts/create_index_seed_mongodb_collection.sh (and its corresponding JavaScript file: ./scripts/create_index_seed_mongodb_collection.js)
+
+```
+
+**Important:**
+Engineers must ensure that the JavaScript file `create_index_seed_mongodb_collection.js`
+is located in the **same directory** as `create_index_seed_mongodb_collection.sh` before execution.
+The shell script automatically loads this JS file during execution using a relative path.
+
+### Step 1: Install, Configure, Secure and Run MongoDB
+
+Run the following shell script to install, configure, and secure the MongoDB instance:
+
+```bash
+sudo ./scripts/setup_run_mongodb_firewall.sh
+```
+
+This script performs the following tasks:
+
+- Installs MongoDB 8.0 and all necessary dependencies
+
+- Configures network bindings, authentication, and security settings
+
+- Generates admin and application user credentials stored securely in `/root/mongo-secrets.env`
+
+- Optionally configures firewall rules and VPN access restrictions for enhanced security
+
+**Note**:
+Ensure that your server or virtual machine has internet access during installation.
+The script requires sudo privileges as it modifies system-level configurations.
+
+### Step 2: Create Collections, Indexes, and Seed Data
+
+Once MongoDB is installed and secured, run the following script to create the required collections, indexes, and initial seed data:
+
+```bash
+sudo ./scripts/create_index_seed_mongodb_collection.sh
+```
+
+This script will:
+
+- Connect to the MongoDB instance using credentials defined in /root/mongo-secrets.env
+
+- Create and index the required collections for:
+
+```
+        nodes
+
+        locations
+
+        nodeEvents
+
+        attendanceHistory
+
+        densityHistory
+```
+
+- Seed initial data for **nodes** and **locations**
+
+- Display verification logs confirming each collection, index, and seed operation
+
+### In Summary
+
+After completing both scripts:
+
+- MongoDB will be fully installed, secured, and running as a system service
+
+- All collections and indexes for the Dynamic Population Density project will be created
+
+- Initial seed data will be available for testing and verification
+
+You can now proceed with the next steps to deploy the Node application and verify connectivity to the seeded database.
 
 ### How To Run
 
