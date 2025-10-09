@@ -79,10 +79,10 @@ Currently, only one device can be connected to the VPN at a time.
 
 ```bash
 # Install OpenConnect on a Linux device
-./scripts/install_vpn.sh
+./scripts/vpn/install_vpn.sh
 
 # Start the VPN connection on a Linux or macOS device if using OpenConnect
-./scripts/connect_murdoch_vpn.sh
+./scripts/vpn/connect_murdoch_vpn.sh
 ```
 
 ### How To Log In to Murdoch's Virtual Machine
@@ -90,7 +90,7 @@ Currently, only one device can be connected to the VPN at a time.
 From a terminal, run the following command and enter the password provided:
 
 ```bash
-ssh \<enter computer name\>@\<enter ip addres\>
+ssh \<enter computer name\>@\<enter ip address\>
 ```
 
 ### How To Log Out from Murdoch's Virtual Machine
@@ -105,7 +105,7 @@ logout
 
 ```bash
 # Stop the VPN connection if used OpenConnect
-./scripts/disconnect_murdoch_vpn.sh
+./scripts/vpn/disconnect_murdoch_vpn.sh
 ```
 
 ### Configuring and Setting Up MongoDB on a Linux Operating System For This Project
@@ -118,8 +118,8 @@ For setup, we assume you are using a Linux distribution such as **Ubuntu** or **
 In the `scripts` folder, you’ll find two relevant scripts for this section:
 
 ```bash
-- ./scripts/setup_run_mongodb_firewall.sh
-- ./scripts/create_index_seed_mongodb_collection.sh (and its corresponding JavaScript file: ./scripts/create_index_seed_mongodb_collection.js)
+- ./scripts/database/setup_run_mongodb_firewall.sh
+- ./scripts/database/create_index_seed_mongodb_collection.sh (and its corresponding JavaScript file: ./scripts/create_index_seed_mongodb_collection.js)
 
 ```
 
@@ -133,7 +133,7 @@ The shell script automatically loads this JS file during execution using a relat
 Run the following shell script to install, configure, and secure the MongoDB instance:
 
 ```bash
-sudo ./scripts/setup_run_mongodb_firewall.sh
+sudo ./scripts/database/setup_run_mongodb_firewall.sh
 ```
 
 This script performs the following tasks:
@@ -155,7 +155,7 @@ The script requires sudo privileges as it modifies system-level configurations.
 Once MongoDB is installed and secured, run the following script to create the required collections, indexes, and initial seed data:
 
 ```bash
-sudo ./scripts/create_index_seed_mongodb_collection.sh
+sudo ./scripts/database/create_index_seed_mongodb_collection.sh
 ```
 
 This script will:
@@ -201,7 +201,7 @@ You can now proceed with the next steps to deploy the Node application and verif
 python -m src.node.index -1 true
 
 # Alternatively, run
-./scripts/run_node.sh
+./scripts/node/run_node.sh
 ```
 
 #### Server
@@ -210,7 +210,7 @@ python -m src.node.index -1 true
 python -m src.server.index
 
 # Alternatively, run
-./scripts/run_server.sh
+./scripts/server/run_server.sh
 ```
 
 ### Config Files
