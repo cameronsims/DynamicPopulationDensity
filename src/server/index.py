@@ -55,13 +55,19 @@ def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, streng
     strength_file = open(strength_factors_fname)
     strength_factors = json_load(strength_file)
 
+    # Read the json file, for frequency
+    frequency_json = open('./data/server/frequency.json', 'r')
+    frequency_data = json_load(frequency_json)
+    frequency = int(frequency_data['seconds'])
+
     # Squash the database
     print("Squashing the Database Insertion.")
     while True:
-        dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, push_to_db, clear_db)
-        
+        #dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, push_to_db, clear_db)
+        print('huh')
+
         # Sleep for however long.
-        time_sleep(172800)
+        time_sleep(frequency)
 
 def server_main(push_to_db: bool, clear_db: bool):
     """

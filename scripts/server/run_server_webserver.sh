@@ -1,1 +1,1 @@
-python "./src/server/manage.py" runserver
+# TODO: ADD WEB SERVER COMMAND
