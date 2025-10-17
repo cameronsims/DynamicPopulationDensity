@@ -1,4 +1,4 @@
-read username url < "./scripts/vpn_info.txt"
+read username url < "./scripts/vpn/vpn_info.txt"
 
 echo "Username: $username"
 echo "URL: $url"

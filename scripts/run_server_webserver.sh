@@ -1,1 +1,0 @@
-python "./src/server/manage.py" runserver
