@@ -1,10 +1,10 @@
 {
-    "node_id": "68a9420948417c1831739d6a",
-    "tshark_path": "C:\\Program Files\\Wireshark\\tshark.exe",
+    "node_id": "68f0af9f149c526815ce5f4b",
+    "tshark_path": "/bin/dumpcap",
 
     "use_timeout": true,
     "timeout": 30,
     "max_packets": 5000,
-    "interface": "Wi-Fi", 
+    "interface": "eth0", 
     "output_file": "./data/captures/capture.pcapng"
 }

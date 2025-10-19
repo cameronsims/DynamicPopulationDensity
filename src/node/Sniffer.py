@@ -103,7 +103,7 @@ class Sniffer:
         # Put any other tshark initialisation code here...
         pass
 
-    def start_sniffing(self, max_packets: int = None, timeout: int = None):
+    def start_sniffing(self, max_packets: int = None, timeout: int = None, use_params: bool = True):
         """
         :fn: start_sniffing
         :date: 27/08/2025
@@ -111,7 +111,11 @@ class Sniffer:
         :brief: Creates a sniffing loop, writes these packets to a cache array.
         :param max_packets: The maximum number of packets to capture before stopping.
         :param timeout: The maximum time to capture packets for, in seconds.
+        :param use_params: Uses a different method to save packets to files.
         """
+        from os.path import file_exists
+        from os import remove as file_remove, chmod as file_perms
+        import stat 
 
         # If we don't have anything for these, set them to default values, otherwise set it to the default.
         max_packets = self.default_max_packets if max_packets is None else max_packets
@@ -122,13 +126,33 @@ class Sniffer:
         packets_param_str = f"for {max_packets} packets"
         time_str = seconds_param_str if self.use_timeout else packets_param_str
         print(f"Sniffing over interface \"{self.interface}\" {time_str} placing in \"{self.output_file}\"")
-        
-        self.capture = LiveCapture(
-            interface=self.interface, 
-            output_file=self.output_file,
-            tshark_path=self.tshark_path
-            #monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
-        )
+
+        # Delete and then Create the file 
+        if file_exists(self.output_file):
+            file_remove(self.output_file)
+        with open(self.output_file, 'w') as file:
+            # Close file with nothing.
+            pass
+            
+        # Set maximum perms.
+        file_perms(self.output_file, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+
+        self.capture = None 
+
+        if use_params:
+            self.capture = LiveCapture(
+                interface=self.interface, 
+                tshark_path=self.tshark_path,
+                custom_parameters = [ '-w', self.output_file, '-F', 'pcapng' ]
+                #monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
+            )
+        else:
+            self.capture = LiveCapture(
+                interface=self.interface, 
+                output_file=self.output_file,
+                tshark_path=self.tshark_path,
+                #monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
+            )
 
         if self.debug_mode:
             self.capture.set_debug()
