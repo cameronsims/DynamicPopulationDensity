@@ -11,7 +11,7 @@ NODE_INFO_FNAME = "./data/node/nodeInfo.json"
 SNIFFING_FNAME  = "./data/node/sniffingConfig.json"
 DBLOGIN_FNAME   = "./data/database/dbLogin.json"
 
-def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert_into_db: bool):
+def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert_into_db: bool, use_params: bool):
     """
     :fn: node_loop:
     :date: 05/09/2025
@@ -26,7 +26,7 @@ def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert
     while max_loops < 0 or i < max_loops:
         # Start the sniffer, save to file.
         print("Start Sniffing...")
-        sniffer.start_sniffing()
+        sniffer.start_sniffing(use_params=use_params)
 
         # Read the packets from what the sniffer inserted.
         print("Reading Packets from File...")
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     len_sys_argv = len(sys_argv)
     max_loops = -1 if (len_sys_argv < 2) else int(sys_argv[1])
     insert_into_db = True if (len_sys_argv < 3) else (sys_argv[2].lower() in truthy_answers)
+    use_params = False if (len_sys_argv < 4) else (sys_argv[3].lower() in truthy_answers)
 
     # Run the main function
     node_main(max_loops, insert_into_db)

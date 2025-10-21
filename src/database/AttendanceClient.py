@@ -63,6 +63,8 @@ class AttendanceDB(protoclient):
         :brief: Inserts a list of attendance record into the database.
         :param attendence_history: The list of attendance we're inserting 
         """
+        from colorama import Fore, Back, Style
+
         # This is the query that we are going to use to find.
         primary_key_query = None # { "node_id": attendence_history.node_id, "timestamp": attendence_history.timestamp }
 
@@ -71,7 +73,7 @@ class AttendanceDB(protoclient):
 
         # If there is no history...
         if history_len < 1:
-            print('Warning: There are no attendnace records to insert.')
+            print(f'{Fore.YELLOW}Warning: There are no attendnace records to insert.{Style.RESET_ALL}')
             return
 
         history = [ 0 ] * history_len

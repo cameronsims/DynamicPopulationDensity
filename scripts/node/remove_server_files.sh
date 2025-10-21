@@ -12,6 +12,7 @@ if [[ "$confirm" =~ ^[Yy]$ ]]; then
     rm -rf ./src/test
     rm -rf ./.devcontainer
     rm -rf ./.github
+    rm -rf ./frontend
   
 # If no...
 else
