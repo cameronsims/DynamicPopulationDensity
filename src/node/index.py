@@ -66,7 +66,7 @@ def node_main(max_loops: int, insert_into_db: bool, use_params: bool):
         dbclient = DatabaseClient(DBLOGIN_FNAME)
 
         # Enter the loop
-        node_loop(sniffer, dbclient, max_loops, insert_into_db)
+        node_loop(sniffer, dbclient, max_loops, insert_into_db, use_params)
     except ServerSelectionTimeoutError as e:
         print(f"{Back.RED}Error: Cannot find the server, are you sure you're connected and the MongoDB is at \"{dbclient.ip_address}\"{Style.RESET_ALL}")
         successfully_exited = False
@@ -92,4 +92,4 @@ if __name__ == "__main__":
     use_params = False if (len_sys_argv < 4) else (sys_argv[3].lower() in truthy_answers)
 
     # Run the main function
-    node_main(max_loops, insert_into_db)
+    node_main(max_loops, insert_into_db, use_params)

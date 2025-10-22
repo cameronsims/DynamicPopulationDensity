@@ -165,11 +165,9 @@ class Sniffer:
             if self.use_timeout:
                 self.capture.sniff(timeout=timeout)
             else:
-                self.capture.sniff_continuously(packet_count=max_packets)
+                for packet in self.capture.sniff_continuously(packet_count=max_packets):
+                    pass
         finally:
-            # Save the file, should be used as a last ditch.
-            self.capture.save_file(self.output_file)
-
             # We have finished capturing packets, return to the function that called this.
             self.capture.close()
            
