@@ -6,6 +6,7 @@
 from src.structures.node import Node
 from src.structures.PacketType import PacketType
 from datetime import datetime
+from bson import objectid as ObjectID
 
 class Attendance:
     """
@@ -80,8 +81,8 @@ class Attendance:
         # This is used to serialise the record, this is used to insert the node into the database.
         return {
             "date_time": self.timestamp,
-            "node_id": self.node_id,
+            "node_id": ObjectID(self.node_id),
             "device_id": self.device_id,
-            "signal_trength": self.strength,
+            "signal_strength": self.strength,
             "packet_type": self.packet_type.value
         }

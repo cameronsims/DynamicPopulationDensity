@@ -5,6 +5,7 @@
 """
 from src.structures.node import Node
 from datetime import datetime
+from bson import objectid as ObjectID
 
 class Density:
     """
@@ -75,8 +76,8 @@ class Density:
         # This is used to serialise the record, this is used to insert the node into the database.
         return {
             "date_time": self.timestamp,
-            "location_id": self.location_id,
-            "node_id": self.node_id,
+            "location_id": ObjectID(self.location_id),
+            "node_id": ObjectID(self.node_id),
             "total_estimated_devices": self.total_entries,
             "total_estimated_humans": self.total_estimated_humans,
             "estimation_factors": self.estimation_factors

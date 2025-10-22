@@ -57,10 +57,11 @@ class NodeEvent:
         :brief: Converts dict/JSON format to this object
         :param data: The data that we are reading through
         """
-        # This is used to serialise the node, this is used to insert the node into the database.
-        self.id = str(data["_id"])
-        self.location_id = data["location_id"]
-        self.description = data["description"]
+
+        self.node_id = ["node_id"]
+        self.is_powered = ["is_powered"]
+        self.is_receiving_data = ["is_receiving_data"]
+        self.date_time = ["date_time"]
     
     def serialise(self):
         """
@@ -72,6 +73,9 @@ class NodeEvent:
         """
         # This is used to serialise the node, this is used to insert the node into the database.
         return {
-            "location_id": self.id,
-            "description": self.description
+
+            "node_id": self.node_id,
+            "is_powered": self.is_powered,
+            "is_receivig_data": self.is_receiving_data,
+            "date_time": self.date_time ,
         }
