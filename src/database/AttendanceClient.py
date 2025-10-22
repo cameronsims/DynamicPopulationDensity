@@ -6,12 +6,12 @@
 from src.structures.node import Node
 from src.structures.attendance import Attendance
 from src.structures.density import Density
-from src.database.ProtoClient import ClientDB as protoclient
+from src.database.ProtoClient import ClientDB as ProtoClient
 
 # MongoDB client
 from pymongo import MongoClient
 
-class AttendanceDB(protoclient):
+class AttendanceDB(ProtoClient):
     """
     :class: NodeDB
     :date: 22/08/2025

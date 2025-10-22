@@ -4,10 +4,10 @@
 :brief: This module defines all important functions for interacting with the external database.
 """
 from src.structures.node import Node
-from src.database.ProtoClient import ClientDB as protoclient
+from src.database.ProtoClient import ClientDB as ProtoClient
 from pymongo import MongoClient
 
-class NodeDB(protoclient):
+class NodeDB(ProtoClient):
     """
     :class: NodeDB
     :date: 22/08/2025
