@@ -73,8 +73,6 @@ class Sniffer:
         self.use_timeout         = bool(config['use_timeout'])
         self.default_timeout     = int (config["timeout"])
 
-        
-
     def __del__(self):
         """
         :fn: __del__
@@ -289,17 +287,21 @@ class Sniffer:
         :brief: Converts a packet to an attendance record, suitable for database insertion.
         :param output_file: The file to read the captured packets from.
         """
+        # Hashing algorithm...
+        from hashlib import md5 as hash_md5
 
         # Packet information 
         packet_type = self.get_packet_type(packet)
-        mac_addr = self.get_packet_mac_address(packet)
+        raw_mac_addr = self.get_packet_mac_address(packet)
+        utf_mac_addr = raw_mac_addr.encode('utf-8')
+        hashed_mac_addr = str(hash_md5(utf_mac_addr).hexdigest())
         signal = self.get_signal(packet)
         
         # This is our attendance record
         attendance_record = Attendance(
             packet.sniff_time, # Timestamp, if we have a packet timestamp, use it.
             self.node_id,      # Node ID, if we have a node associated with this sniffer, add it.
-            mac_addr,          # If the Packet has a MAC Address, add it.
+            hashed_mac_addr,   # If the Packet has a MAC Address, add it.
             signal,            # DBM signal, might be None
             packet_type        # The type of packet (bluetooth/wifi/ethernet)
         )
