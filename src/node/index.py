@@ -21,6 +21,7 @@ def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert
     :param dbclient: The database client to read to.
     :param max_loops: The maximum amount of loops to run, -1 for infinite.
     :param insert_into_db: Boolean, should we add the packets we read into the database? (Should be True in production!)
+    :param use_params: Used if we want to use tshark more directly, helps with some errors to do with capture files.
     """
     i = 0
     while max_loops < 0 or i < max_loops:
@@ -42,7 +43,7 @@ def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert
         i += 1
 
 
-def node_main(max_loops: int, insert_into_db: bool):
+def node_main(max_loops: int, insert_into_db: bool, use_params: bool):
     """
     :fn: node_main:
     :date: 05/09/2025
@@ -50,12 +51,13 @@ def node_main(max_loops: int, insert_into_db: bool):
     :brief: This function is the main entry point for the node side.
     :param max_loops: The maximum amount of loops to run, -1 for infinite.
     :param insert_into_db: Boolean, should we add the packets we read into the database? (Should be True in production!)
+    :param use_params: Used if we want to use tshark more directly, helps with some errors to do with capture files.
     """
-    # Sniffer that we are using.
-    sniffer = Sniffer(SNIFFING_FNAME, NODE_INFO_FNAME)
-
     from pymongo.errors import ServerSelectionTimeoutError
     from colorama import Fore, Back, Style
+
+    # Sniffer that we are using.
+    sniffer = Sniffer(SNIFFING_FNAME, NODE_INFO_FNAME)
 
     successfully_exited = True
 

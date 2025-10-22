@@ -2,6 +2,9 @@
     "node_id": "68f0af9f149c526815ce5f4b",
     "tshark_path": "/bin/dumpcap",
 
+    "use_json": true,
+    "debug_mode": false,
+
     "use_timeout": true,
     "timeout": 30,
     "max_packets": 5000,

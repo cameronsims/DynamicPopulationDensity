@@ -16,7 +16,7 @@ class Sniffer:
     :author: Cameron Sims
     :brief: This class holds our database clients.
     """
-    def __init__(self, sniff_config_file: str, node_config_file: str, debug_mode: bool = False): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
+    def __init__(self, sniff_config_file: str, node_config_file: str): #, interface: str = "Wi-Fi", output_file: str = "./data/captures/capture.pcapng"):
         """
         :fn: __init__
         :date: 27/08/2025
@@ -25,10 +25,9 @@ class Sniffer:
         :param node_id: The node id that this sniffer instance refers to
         :param sniff_config_file: The file to configure this sniffer
         :param node_config_file: The file to configure the node info that this sniffer belongs to.
-        :param debug_mode: Used for debugging pyshark/tshark
         """
         # Read the file 
-        self.debug_mode = debug_mode
+
         self.load_node_config(node_config_file)
         self.load_sniff_config(sniff_config_file)
 
@@ -66,6 +65,9 @@ class Sniffer:
         self.output_file         = str (config['output_file'])
         self.tshark_path         = str (config['tshark_path'])
         self.default_max_packets = int (config["max_packets"])
+
+        self.use_json            = bool(config['use_json'])
+        self.debug_mode          = bool(config['debug_mode'])
 
         # This specific varaible is if we should use max packets or timeout
         self.use_timeout         = bool(config['use_timeout'])
@@ -113,7 +115,7 @@ class Sniffer:
         :param timeout: The maximum time to capture packets for, in seconds.
         :param use_params: Uses a different method to save packets to files.
         """
-        from os.path import file_exists
+        from os.path import exists as file_exists
         from os import remove as file_remove, chmod as file_perms
         import stat 
 
@@ -143,7 +145,8 @@ class Sniffer:
             self.capture = LiveCapture(
                 interface=self.interface, 
                 tshark_path=self.tshark_path,
-                custom_parameters = [ '-w', self.output_file, '-F', 'pcapng' ]
+                custom_parameters = [ '-w', self.output_file, '-F', 'pcapng' ],
+                use_json = self.use_json
                 #monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
             )
         else:
@@ -151,6 +154,7 @@ class Sniffer:
                 interface=self.interface, 
                 output_file=self.output_file,
                 tshark_path=self.tshark_path,
+                use_json = self.use_json
                 #monitor_mode=True # Gets the strengths of connections, good to determine how far away they are.
             )
 
@@ -163,6 +167,9 @@ class Sniffer:
             else:
                 self.capture.sniff_continuously(packet_count=max_packets)
         finally:
+            # Save the file, should be used as a last ditch.
+            self.capture.save_file(self.output_file)
+
             # We have finished capturing packets, return to the function that called this.
             self.capture.close()
            
@@ -184,6 +191,8 @@ class Sniffer:
             #use_json=True, 
             #include_raw=True, 
             tshark_path=self.tshark_path)
+        
+        # Load the packets into the program, if not activated the packets won't be read.
         self.file_capture.load_packets()
 
         len_file_capture = len(self.file_capture)
