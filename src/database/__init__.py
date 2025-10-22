@@ -8,6 +8,6 @@
 # from . import DensityClient
 # from . import LocationClient
 # from . import NodeClient
-# from . import protoclient
+# from . import ProtoClient
 # from . import Client
 
