@@ -1,11 +1,12 @@
 {
-    "ip": "mongodb://localhost:27017",
-    "name": "DynamicPopulationDensity_test",
+    "ip": "mongodb://<enter db username>:<enter db password>@<enter db server ip address>:<enter db port>/<enter db name>?authSource=<enter db name>",
+    "name": "<enter db name>",
     
      "collections": {
-        "nodes": "Nodes",
-        "locations": "Locations",
-        "density": "DensityHistory",
-        "attendance": "AttendanceHistory"
+        "nodes": "nodes",
+        "locations": "locations",
+        "nodeEvents": "nodeEvents",
+        "density": "densityHistory",
+        "attendance": "attendanceHistory"
     }
 }

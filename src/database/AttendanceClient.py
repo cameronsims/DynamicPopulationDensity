@@ -6,7 +6,7 @@
 from src.structures.node import Node
 from src.structures.attendance import Attendance
 from src.structures.density import Density
-from src.database.protoclient import ClientDB as protoclient
+from src.database.ProtoClient import ClientDB as protoclient
 
 # MongoDB client
 from pymongo import MongoClient
