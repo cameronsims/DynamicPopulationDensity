@@ -5,7 +5,7 @@
 """
 from src.structures.node import Node
 from datetime import datetime
-from bson import objectid as ObjectID
+from bson.objectid import ObjectId as ObjectID
 
 class Density:
     """

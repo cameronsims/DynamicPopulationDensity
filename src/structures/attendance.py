@@ -6,7 +6,7 @@
 from src.structures.node import Node
 from src.structures.PacketType import PacketType
 from datetime import datetime
-from bson import objectid as ObjectID
+from bson.objectid import ObjectId as ObjectID
 
 class Attendance:
     """
