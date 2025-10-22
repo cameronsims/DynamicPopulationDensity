@@ -1,0 +1,15 @@
+{
+    "ip": "mongodb://dpd_node_lab_a:nzMvTAB7yZPhCqZCTvQb9tTm@10.51.33.30:27017/dynamicpopulationdensity_db?authSource=dynamicpopulationdensity_db",
+    "name": "dynamicpopulationdensity_db",
+    "user": "dpd_node_lab_a",
+    "password": "nzMvTAB7yZPhCqZCTvQb9tTm",
+    "bind_ip": "10.51.33.30",
+    "port": "27017",
+    "collections": {
+        "nodes": "nodes",
+        "nodeEvents": "nodeEvents",
+        "locations": "locations",
+        "density": "densityHistory",
+        "attendance": "attendanceHistory"
+    }
+}

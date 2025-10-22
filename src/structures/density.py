@@ -5,6 +5,7 @@
 """
 from src.structures.node import Node
 from datetime import datetime
+from bson.objectid import ObjectId as ObjectID
 
 class Density:
     """
@@ -13,7 +14,7 @@ class Density:
     :author: Cameron Sims
     :brief: This class is used to refer to an attendance record that has been compiled.
     """
-    def __init__(self, timestamp: datetime = datetime.now(), node: Node = None, total_entries: int = -1): 
+    def __init__(self, timestamp: datetime = datetime.now(), node: Node = None, total_entries: int = -1, total_estimated_humans: int = 0, estimation_factors: int = 0): 
         """
         :fn: __init__
         :date: 22/08/2025
@@ -33,6 +34,9 @@ class Density:
 
         # This refers to the total number of entries that were observed at this time.
         self.total_entries = total_entries
+        
+        self.total_estimated_humans = total_estimated_humans
+        self.estimation_factors = estimation_factors
 
     def __hash__(self):
         """
@@ -54,10 +58,12 @@ class Density:
         :param data: The data that we are reading through
         """
         # This is used to serialise the node, this is used to insert the node into the database.
-        self.timestamp = data["timestamp"]
+        self.timestamp = data["date_time"]
         self.location_id = data["location_id"]
         self.node_id = data["node_id"]
-        self.total_entries = data["total_entries"]
+        self.total_entries = data["total_estimated_devices"]
+        self.total_estimated_humans = data["total_estimated_humans"]
+        self.estimation_factors = data["estimation_factors"]
     
     def serialise(self) -> dict:
         """
@@ -69,10 +75,12 @@ class Density:
         """
         # This is used to serialise the record, this is used to insert the node into the database.
         return {
-            "timestamp": self.timestamp,
-            "location_id": self.location_id,
-            "node_id": self.node_id,
-            "total_entries": self.total_entries
+            "date_time": self.timestamp,
+            "location_id": ObjectID(self.location_id),
+            "node_id": ObjectID(self.node_id),
+            "total_estimated_devices": self.total_entries,
+            "total_estimated_humans": self.total_estimated_humans,
+            "estimation_factors": self.estimation_factors
         }
     
     def roundToLast30Minutes(timestamp: datetime) -> datetime:
