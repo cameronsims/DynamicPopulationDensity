@@ -9,7 +9,7 @@ from src.node.Sniffer import Sniffer
 
 NODE_INFO_FNAME = "./data/node/nodeInfo.json"
 SNIFFING_FNAME  = "./data/node/sniffingConfig.json"
-DBLOGIN_FNAME   = "./data/database/dbLogin.json"
+DBLOGIN_FNAME   = "./data/database/dbLogin_prod_node_lab_a.json"
 
 def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert_into_db: bool, use_params: bool):
     """
