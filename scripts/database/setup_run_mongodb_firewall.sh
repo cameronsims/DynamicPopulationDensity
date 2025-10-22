@@ -29,6 +29,10 @@ request_configuration() {
   read -r BIND_IP
   BIND_IP="${BIND_IP}"
 
+  echo "Please enter the port number to be used (e.g., 27017):"
+  read -r PORT
+  PORT="${PORT}"
+
   echo "Would you like to enable firewall to control access to database? (y/n) - recommended for improve security"
   read -r ENABLE_FIREWALL
   if [[ "$ENABLE_FIREWALL" == "y" ]]; then
@@ -74,6 +78,7 @@ create_or_load_secrets() {
 
 cat > "$SECRETS_FILE" <<EOF
 BIND_IP='$BIND_IP'
+PORT='$PORT'
 FIREWALL_SUBNET='$FIREWALL_SUBNET'
 ENABLE_FIREWALL='$ENABLE_FIREWALL'
 MONGO_MAJOR='$MONGO_MAJOR'
@@ -198,7 +203,7 @@ systemLog:
 
 # Network interfaces
 net:
-  port: 27017
+  port: ${PORT}
   bindIp: "127.0.0.1,${BIND_IP}" # Listen to local interface or ${BIND_IP}. Comment this line to listen on all interfaces.
 
 # # How the process runs
@@ -343,7 +348,7 @@ lockdown_firewall() {
 
   # Allow MongoDB from specified subnet
   echo "Allowing MongoDB connections (port 27017) from ${FIREWALL_SUBNET}..."
-  ufw allow from "$FIREWALL_SUBNET" to any port 27017 proto tcp || true
+  ufw allow from "$FIREWALL_SUBNET" to any port $PORT proto tcp || true
 
 
   # VPN-specific rules
@@ -364,7 +369,7 @@ lockdown_firewall() {
     if [[ "$VPN_IFACE" == "N/A" ]]; then
       echo "VPN interface not provided. Skipping VPN-specific UFW rules."
     else
-      ufw allow in on "$VPN_IFACE" to any port 27017 proto tcp || true
+      ufw allow in on "$VPN_IFACE" to any port $PORT proto tcp || true
       echo "Allowed MongoDB access on VPN interface $VPN_IFACE."  
     fi
     
@@ -390,7 +395,7 @@ print_summary() {
   echo "====================================================="
   echo " MongoDB installed and secured."
   echo "  - Bind IP Address              : ${BIND_IP}"
-  echo "  - MongoDB Port                 : 27017"
+  echo "  - MongoDB Port                 : ${PORT}"
   echo "  - Enabled firewall             : ${ENABLE_FIREWALL}"
   echo "  - Allowed subnet               : ${FIREWALL_SUBNET}"
   echo "  - Allowed VPN Interface        : ${VPN_IFACE:-Not_configured}"
@@ -408,7 +413,7 @@ print_summary() {
   echo "  - Secrets file                 : $SECRETS_FILE (root-only)"
   echo
   echo " From a client(MongoDB shell or Python), use:"
-  echo "   mongosh \"mongodb://<enter db username>:<enter password>@${BIND_IP}:27017/${APP_DB}?authSource=${APP_DB}\""
+  echo "   mongosh \"mongodb://<enter db username>:<enter password>@${BIND_IP}:${PORT}/${APP_DB}?authSource=${APP_DB}\""
   echo " (Password is stored in $SECRETS_FILE; do not print it to logs.)"
   echo "====================================================="
 }
