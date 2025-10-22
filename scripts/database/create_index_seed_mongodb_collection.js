@@ -73,9 +73,9 @@ db.createCollection("attendanceHistory", {
     required: ["node_id","packet_type","device_id","signal_strength","date_time"],
     properties: {
       node_id:         { bsonType: "objectId" },
-      packet_type:     { bsonType: "string" },
+      packet_type:     { bsonType: "int" },
       device_id:       { bsonType: "string" }, // using hashed device ids
-      signal_strength: { bsonType: "double" },
+      signal_strength: { bsonType: ["int", 'null'] },
       date_time:       { bsonType: "date" }
     }
   }},
