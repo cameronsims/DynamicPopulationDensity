@@ -63,10 +63,10 @@ class Attendance:
         """
 
         # This is used to serialise the node, this is used to insert the node into the database.
-        self.timestamp = data["timestamp"]
+        self.timestamp = data["date_time"]
         self.node_id   = data["node_id"]
         self.device_id = data["device_id"]
-        self.strength  = None if ("strength"  not in data) else data["strength"]
+        self.strength  = None if ("signal_strength"  not in data) else data["signal_strength"]
         self.packet_type = PacketType.NONE if ("packet_type" not in data) else PacketType(data["packet_type"])
 
     def serialise(self) -> dict:
@@ -79,9 +79,9 @@ class Attendance:
         """
         # This is used to serialise the record, this is used to insert the node into the database.
         return {
-            "timestamp": self.timestamp,
+            "date_time": self.timestamp,
             "node_id": self.node_id,
             "device_id": self.device_id,
-            "strength": self.strength,
+            "signal_trength": self.strength,
             "packet_type": self.packet_type.value
         }
