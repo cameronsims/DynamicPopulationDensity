@@ -63,7 +63,7 @@ def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, streng
     # Squash the database
     print("Squashing the Database Insertion.")
     while True:
-        #dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, push_to_db, clear_db)
+        dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, push_to_db, clear_db)
         print('huh')
 
         # Sleep for however long.
