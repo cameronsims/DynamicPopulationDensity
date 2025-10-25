@@ -55,11 +55,19 @@ class DensityDB(ProtoClient):
         :brief: Inserts a list of attendance record into the database.
         :param attendence_history: The list of attendance we're inserting 
         """
+        from colorama import Fore, Back, Style
+
         # This is the query that we are going to use to find.
         primary_key_query = None # { "node_id": attendence_history.node_id, "timestamp": attendence_history.timestamp }
 
         # The list of values 
         history_len = len(attendence_history)
+        # If there is no history...
+        if history_len < 1:
+            print(f'{Fore.YELLOW}Warning: There are no density records to insert.{Style.RESET_ALL}')
+            return
+
+        
         history = [ 0 ] * history_len
         
         # For each record
