@@ -14,7 +14,7 @@ class Density:
     :author: Cameron Sims
     :brief: This class is used to refer to an attendance record that has been compiled.
     """
-    def __init__(self, timestamp: datetime = datetime.now(), node: Node = None, total_entries: int = -1, total_estimated_humans: int = 0, estimation_factors: int = 0): 
+    def __init__(self, timestamp: datetime = datetime.now(), node: Node | str = None, total_entries: int = -1, total_estimated_humans: int = 0, estimation_factors: int = 0): 
         """
         :fn: __init__
         :date: 22/08/2025

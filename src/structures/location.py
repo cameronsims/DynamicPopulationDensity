@@ -19,6 +19,9 @@ class Location:
         :brief: Creates a location object.
         :param id: The ID given by MongoDB
         :param name: The name of the location
+        :param building: The building name in string of the location
+        :param floor: The location's level e.g Level 3 or 4
+        :param room: The location's room name e.g 3.062 or 3.064
         :param description: A brief description of the location
         """
         self.id = id

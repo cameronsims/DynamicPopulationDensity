@@ -68,10 +68,10 @@ class NodeEvent:
         :fn: serialise
         :date: 22/08/2025
         :author: Cameron Sims
-        :brief: Serialises the node into a dictionary format for database insertion.
-        :return: A dictionary representation of the node.
+        :brief: Serialises the node event into a dictionary format for database insertion.
+        :return: A dictionary representation of the node event.
         """
-        # This is used to serialise the node, this is used to insert the node into the database.
+        # This is used to serialise the node event, this is used to insert the node into the database.
         return {
 
             "node_id": self.node_id,
