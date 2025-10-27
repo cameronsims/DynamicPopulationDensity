@@ -71,20 +71,51 @@ deactivate
 chmod +x examplescript.sh
 ```
 
-## Configuring and setting up a Node
+# Configuring, Setting Up, and Executing the Program for a Node
 
-### How to setup and configure a node: For Raspberry Pi Zero W installed with Raspberry Pi OS Lite(32 bit)
+## For Raspberry Pi Zero W (Raspberry Pi OS Lite 32-bit)
 
-Setting up with virtual environment, execute the following script with sudo privileges:
+This section explains how to configure and execute the node program on a **Raspberry Pi Zero W** running **Raspberry Pi OS Lite (32-bit)**.
+
+---
+
+## Pre-Setup Requirements
+
+Before running the setup script, ensure the following conditions are met:
+
+1. The **`DynamicPopulationDensity`** directory must be stored in the `/opt` directory:
 
 ```bash
-./scripts/node/setup.sh
+/opt/DynamicPopulationDensity
 ```
 
-Setting up without virtual environment, execute the following script with sudo privileges:
+2. The setup script must be executed **from within** the `DynamicPopulationDensity` directory:
 
 ```bash
-./scripts/node/configure_setup_pizerow_without_venv.sh
+cd /opt/DynamicPopulationDensity
+```
+
+3. A file named ict302-node.service must exist in the same directory:
+
+```bash
+/opt/DynamicPopulationDensity/scripts/node/ict302-node.service
+
+```
+
+Option 1: Setup with Virtual Environment
+
+To set up the program using a Python virtual environment, execute the following command with sudo privileges:
+
+```bash
+sudo ./scripts/node/setup.sh
+```
+
+Option 2: Setup without Virtual Environment
+
+To set up the program without a virtual environment, execute the following command with sudo privileges:
+
+```bash
+sudo ./scripts/node/configure_setup_pizerow_without_venv.sh
 ```
 
 ### Connecting to Murdoch's Ubuntu Virtual Machine
@@ -96,10 +127,10 @@ Currently, only one device can be connected to the VPN at a time.
 
 ```bash
 # Install OpenConnect on a Linux device
-./scripts/vpn/install_vpn.sh
+sudo ./scripts/vpn/install_vpn.sh
 
 # Start the VPN connection on a Linux or macOS device if using OpenConnect
-./scripts/vpn/connect_murdoch_vpn.sh
+sudo ./scripts/vpn/connect_murdoch_vpn.sh
 ```
 
 ### How To Log In to Murdoch's Virtual Machine
@@ -122,7 +153,7 @@ logout
 
 ```bash
 # Stop the VPN connection if used OpenConnect
-./scripts/vpn/disconnect_murdoch_vpn.sh
+sudo ./scripts/vpn/disconnect_murdoch_vpn.sh
 ```
 
 ### Configuring and Setting Up MongoDB on a Linux Operating System For This Project
