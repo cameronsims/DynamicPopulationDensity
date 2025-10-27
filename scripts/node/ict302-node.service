@@ -6,10 +6,10 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 # Path to your Python interpreter and script
-ExecStart=/usr/bin/python3 /home/DynamicPopulationDensity/src/node/index.py
+ExecStart=/usr/bin/python3 -m src.node.index
 
 # Working directory
-WorkingDirectory=/home/DynamicPopulationDensity/src/node
+WorkingDirectory=/home/%u/DynamicPopulationDensity/
 
 # Restart options
 Restart=always
@@ -22,9 +22,6 @@ Group=root
 # Log standard output and error
 StandardOutput=append:/var/log/ict302-node.log
 StandardError=append:/var/log/ict302-node.err
-
-# Environment variables
-Environment="ENV=production"
 
 [Install]
 WantedBy=multi-user.target
