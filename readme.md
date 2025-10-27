@@ -70,6 +70,22 @@ deactivate
 chmod +x examplescript.sh
 ```
 
+## Configuring and setting up a Node
+
+### How to setup and configure a node: For Raspberry Pi Zero W installed with Raspberry Pi OS Lite(32 bit)
+
+Setting up with virtual environment, execute the following script with sudo privileges:
+
+```bash
+./scripts/node/setup.sh
+```
+
+Setting up without virtual environment, execute the following script with sudo privileges:
+
+```bash
+./scripts/node/configure_setup_pizerow_without_venv.sh
+```
+
 ### Connecting to Murdoch's Ubuntu Virtual Machine
 
 To access Murdoch's Virtual Machine, each device must first connect to Murdoch's VPN.
@@ -293,9 +309,9 @@ pip install sphinx-rtd-theme
 
 | Type      | What Is Expected                                                                                                                                                |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Files     | Files should contain all of the following information: \:file\:, \:date\:, \:author\:, :brief                                                                    |
-| Functions | Functions should contain: \:fn\:, \:date\:, \:author\:, \:brief\:, \:return\:. As well as all parameters using the \:param\: tag.                                     |
-| Classes   | Classes should contain all of the following: \:class\:/\:struct\:, \:date\:, \:author\:, \:brief\:                                                                  |
+| Files     | Files should contain all of the following information: \:file\:, \:date\:, \:author\:, :brief                                                                   |
+| Functions | Functions should contain: \:fn\:, \:date\:, \:author\:, \:brief\:, \:return\:. As well as all parameters using the \:param\: tag.                               |
+| Classes   | Classes should contain all of the following: \:class\:/\:struct\:, \:date\:, \:author\:, \:brief\:                                                              |
 | Variables | Variables should only require documentation if they are existing in a class or global. For this, only describing the variable in one line should be nessessary. |
 
 ## Writing Style
@@ -306,4 +322,4 @@ All modules for the code should be contained within their own folders and should
 
 ### Testing
 
-All modules should have tests which test expected cases, unexpected cases and edge cases. <br/>These tests should be written in their own executables. Documentation is not required for the testing files. However, try keep it clean so it is still understnadable.
+All modules should have tests which test expected cases, unexpected cases and edge cases. <br/>These tests should be written in their own executables. Documentation is not required for the testing files. However, try keep it clean so it is still understandable.
