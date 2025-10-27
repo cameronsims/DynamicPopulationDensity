@@ -4,7 +4,6 @@ docs/_*
 # Capture files.
 data/captures/capture.pcapng
 data/captures/*.pcapng
-data/captures/capture.pcapng
 data/*.pcapng
 
 # Python Cache files
