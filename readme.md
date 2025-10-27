@@ -27,6 +27,7 @@ This project is in Python3, please try to use the version "Python 3.12.10".
 
 To run the project the following external libraries and modules are required:
 
+- colorama
 - pymongo
 - pyshark
 
