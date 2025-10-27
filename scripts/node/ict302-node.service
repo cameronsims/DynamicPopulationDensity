@@ -9,7 +9,7 @@ Type=simple
 ExecStart=/usr/bin/python3 -m src.node.index
 
 # Working directory
-WorkingDirectory=/home/%u/DynamicPopulationDensity/
+WorkingDirectory=/opt/DynamicPopulationDensity/
 
 # Restart options
 Restart=always
