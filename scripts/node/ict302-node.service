@@ -1,0 +1,30 @@
+[Unit]
+Description=ICT302 Node Python Script service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+# Path to your Python interpreter and script
+ExecStart=/usr/bin/python3 /home/DynamicPopulationDensity/src/node/index.py
+
+# Working directory
+WorkingDirectory=/home/DynamicPopulationDensity/src/node
+
+# Restart options
+Restart=always
+RestartSec=10
+
+# Run as a specific user
+User=root
+Group=root
+
+# Log standard output and error
+StandardOutput=append:/var/log/ict302-node.log
+StandardError=append:/var/log/ict302-node.err
+
+# Environment variables
+Environment="ENV=production"
+
+[Install]
+WantedBy=multi-user.target
