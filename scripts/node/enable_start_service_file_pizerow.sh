@@ -4,7 +4,7 @@
 echo "Attempting to enable and start the systemd service file for the node..."
 
 echo "Copying ict302-node.service file into systmd directory: /etc/systemd/system/..."
-sudo cp ict302-node.service /etc/systemd/system/
+sudo cp ../DynamicPopulationDensity/scripts/node/ict302-node.service /etc/systemd/system/
 
 echo "Reloading systemd to recognise ict302-node.service file..."
 sudo systemctl daemon-reload
