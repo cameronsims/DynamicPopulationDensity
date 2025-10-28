@@ -84,51 +84,6 @@ logout
 
 # Automate installation using bash script 
 ---
-## Configuring, Setting Up, and Executing the Program for a Node
-
-### For Raspberry Pi Zero W on Raspberry Pi OS Lite 32-bit
-
-This section explains how to configure and execute the node program on a **Raspberry Pi Zero W** running **Raspberry Pi OS Lite (32-bit)**.
-
-### Pre-Setup Requirements
-
-Before running the setup script, ensure the following conditions are met:
-
-1. The **`DynamicPopulationDensity`** directory must be stored in the `/opt` directory:
-
-```bash
-/opt/DynamicPopulationDensity
-```
-
-2. The setup script must be executed **from within** the `DynamicPopulationDensity` directory:
-
-```bash
-cd /opt/DynamicPopulationDensity
-```
-
-3. A file named ict302-node.service must exist in the same directory:
-
-```bash
-/opt/DynamicPopulationDensity/scripts/node/ict302-node.service
-
-```
-
-#### Option 1: Setup with Virtual Environment
-
-To set up the program using a Python virtual environment, execute the following command with sudo privileges:
-
-```bash
-sudo ./scripts/node/setup.sh
-```
-
-#### Option 2: Setup without Virtual Environment
-
-To set up the program without a virtual environment, execute the following command with sudo privileges:
-
-```bash
-sudo ./scripts/node/configure_setup_pizerow_without_venv.sh
-```
----
 ## Configuring, Setting Up and Running Database Management System
 
 ### For MongoDB on Ubuntu 24.04.3 LTS using terminal
@@ -203,6 +158,52 @@ This script will:
 - Seed initial data for **nodes** and **locations**
 
 - Display verification logs confirming each collection, index, and seed operation
+
+---
+## Configuring, Setting Up, and Executing the Program for a Node
+
+### For Raspberry Pi Zero W on Raspberry Pi OS Lite 32-bit
+
+This section explains how to configure and execute the node program on a **Raspberry Pi Zero W** running **Raspberry Pi OS Lite (32-bit)**.
+
+### Pre-Setup Requirements
+
+Before running the setup script, ensure the following conditions are met:
+
+1. The **`DynamicPopulationDensity`** directory must be stored in the `/opt` directory:
+
+```bash
+/opt/DynamicPopulationDensity
+```
+
+2. The setup script must be executed **from within** the `DynamicPopulationDensity` directory:
+
+```bash
+cd /opt/DynamicPopulationDensity
+```
+
+3. A file named ict302-node.service must exist in the same directory:
+
+```bash
+/opt/DynamicPopulationDensity/scripts/node/ict302-node.service
+
+```
+
+#### Option 1: Setup with Virtual Environment
+
+To set up the program using a Python virtual environment, execute the following command with sudo privileges:
+
+```bash
+sudo ./scripts/node/setup.sh
+```
+
+#### Option 2: Setup without Virtual Environment
+
+To set up the program without a virtual environment, execute the following command with sudo privileges:
+
+```bash
+sudo ./scripts/node/configure_setup_pizerow_without_venv.sh
+```
 
 # Manual installation (Optional - Setup Python environment)
 ---
