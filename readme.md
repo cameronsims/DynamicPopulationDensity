@@ -68,18 +68,56 @@ deactivate
 
 ```bash
 # Before executing a script, ensure it has executable permissions:
-chmod +x examplescript.sh
+chmod +x examplescriptname.sh
+```
+===============================================================================================
+## Connecting to Murdoch's Ubuntu Virtual Machine
+
+To access Murdoch's Virtual Machine, each device must first connect to Murdoch's VPN.
+Currently, only one device can be connected to the VPN at a time.
+
+### How To Connect to Murdoch's VPN
+
+```bash
+# Install OpenConnect on a Linux device
+sudo ./scripts/vpn/install_vpn.sh
+
+# Start the VPN connection on a Linux or macOS device if using OpenConnect
+sudo ./scripts/vpn/connect_murdoch_vpn.sh
 ```
 
-# Configuring, Setting Up, and Executing the Program for a Node
+### How To Log In to Murdoch's Virtual Machine
 
-## For Raspberry Pi Zero W (Raspberry Pi OS Lite 32-bit)
+From a terminal, run the following command and enter the password provided:
+
+```bash
+ssh \<enter computer name\>@\<enter ip address\>
+```
+
+### How To Log Out from Murdoch's Virtual Machine
+
+In the same terminal session used for SSH, run:
+
+```bash
+logout
+```
+
+### How To Disconnect from Murdoch's VPN
+
+```bash
+# Stop the VPN connection if used OpenConnect
+sudo ./scripts/vpn/disconnect_murdoch_vpn.sh
+```
+===============================================================================================
+## Configuring, Setting Up, and Executing the Program for a Node
+
+### For Raspberry Pi Zero W on Raspberry Pi OS Lite 32-bit
 
 This section explains how to configure and execute the node program on a **Raspberry Pi Zero W** running **Raspberry Pi OS Lite (32-bit)**.
 
 ---
 
-## Pre-Setup Requirements
+### Pre-Setup Requirements
 
 Before running the setup script, ensure the following conditions are met:
 
@@ -117,46 +155,10 @@ To set up the program without a virtual environment, execute the following comma
 ```bash
 sudo ./scripts/node/configure_setup_pizerow_without_venv.sh
 ```
+===============================================================================================
+## Configuring, Setting Up and Running Database Management System
 
-### Connecting to Murdoch's Ubuntu Virtual Machine
-
-To access Murdoch's Virtual Machine, each device must first connect to Murdoch's VPN.
-Currently, only one device can be connected to the VPN at a time.
-
-### How To Connect to Murdoch's VPN
-
-```bash
-# Install OpenConnect on a Linux device
-sudo ./scripts/vpn/install_vpn.sh
-
-# Start the VPN connection on a Linux or macOS device if using OpenConnect
-sudo ./scripts/vpn/connect_murdoch_vpn.sh
-```
-
-### How To Log In to Murdoch's Virtual Machine
-
-From a terminal, run the following command and enter the password provided:
-
-```bash
-ssh \<enter computer name\>@\<enter ip address\>
-```
-
-### How To Log Out from Murdoch's Virtual Machine
-
-In the same terminal session used for SSH, run:
-
-```bash
-logout
-```
-
-### How To Disconnect from Murdoch's VPN
-
-```bash
-# Stop the VPN connection if used OpenConnect
-sudo ./scripts/vpn/disconnect_murdoch_vpn.sh
-```
-
-### Configuring and Setting Up MongoDB on a Linux Operating System For This Project
+### For MongoDB on Ubuntu 24.04.3 LTS using terminal
 
 To start collecting data, you’ll first need to set up a database.  
 This project uses **MongoDB** as the chosen database system.
@@ -228,19 +230,8 @@ This script will:
 
 - Display verification logs confirming each collection, index, and seed operation
 
-### In Summary
 
-After completing both scripts:
-
-- MongoDB will be fully installed, secured, and running as a system service
-
-- All collections and indexes for the Dynamic Population Density project will be created
-
-- Initial seed data will be available for testing and verification
-
-You can now proceed with the next steps to deploy the Node application and verify connectivity to the seeded database.
-
-### How To Run
+### How To Run Manually
 
 #### Node
 
