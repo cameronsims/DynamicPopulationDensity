@@ -6,7 +6,7 @@
 
 Dynamic Population Density is a project for the Murdoch University unit "ICT302 - Professional Practice Project."<br/>The project revolves around collecting geolocational data from an area, and then giving a numerical amount representing some sort of population (attendance).
 
-## Installation and Setup
+# Installation and Setup Requirements
 
 ### Docker / Virtual Machines
 
@@ -17,20 +17,195 @@ The project is assumed to be running off of a Raspberry PI, hence ensuring that 
 This project is designed and deployed on Linux-based distributions:
 
 - **Node(s):** Running on `Raspberry Pi OS (Raspbian) Bookworm Lite`
-- **Server:** Running on `Ubuntu Server`
+- **Server:** Running on `Ubuntu 24.04.3 LTS`
 
 ### Programming Language
 
-This project is in Python3, please try to use the version "Python 3.12.10".
+This project is in Python3, please try to use the version "Python 3.12.10", and JavaScipt Web Framework, uses ReactJS.
 
-### Modules / Libraries
+### Modules / Libraries / Frameworks / Software Development Kit
 
-To run the project the following external libraries and modules are required:
+To run the project the following external libraries, modules, frameworks and software development kit are required:
 
 - colorama
 - pymongo
 - pyshark
+- reactjs
+- powerbi SDK
 
+### Executing Shell Script
+
+```bash
+# Before executing a script, ensure it has executable permissions:
+chmod +x examplescriptname.sh
+```
+
+### Murdoch's Virtual Private Network (VPN)
+
+To access Murdoch's Virtual Machine, each device must first connect to Murdoch's VPN.
+Currently, only one device can be connected to the VPN at a time.
+
+### How To Connect to Murdoch's VPN
+
+```bash
+# Install OpenConnect on a Linux device
+sudo ./scripts/vpn/install_vpn.sh
+
+# Start the VPN connection on a Linux or macOS device if using OpenConnect
+sudo ./scripts/vpn/connect_murdoch_vpn.sh
+```
+
+### How To Disconnect from Murdoch's VPN
+
+```bash
+# Stop the VPN connection if used OpenConnect
+sudo ./scripts/vpn/disconnect_murdoch_vpn.sh
+```
+
+### Murdoch's Virtual Machine (VM)
+
+The Murdoch's VM for this project is currently running on Ubuntu 24.04.3 LTS which is hosting the database, backend process and web server.
+
+### How To Log In to Murdoch's Virtual Machine
+
+From a terminal, run the following command and enter the password provided:
+
+```bash
+ssh \<enter computer name\>@\<enter ip address\>
+```
+
+### How To Log Out from Murdoch's Virtual Machine
+
+In the same terminal session used for SSH, run:
+
+```bash
+logout
+```
+
+# Automate installation using bash script 
+---
+## Configuring, Setting Up, and Executing the Program for a Node
+
+### For Raspberry Pi Zero W on Raspberry Pi OS Lite 32-bit
+
+This section explains how to configure and execute the node program on a **Raspberry Pi Zero W** running **Raspberry Pi OS Lite (32-bit)**.
+
+### Pre-Setup Requirements
+
+Before running the setup script, ensure the following conditions are met:
+
+1. The **`DynamicPopulationDensity`** directory must be stored in the `/opt` directory:
+
+```bash
+/opt/DynamicPopulationDensity
+```
+
+2. The setup script must be executed **from within** the `DynamicPopulationDensity` directory:
+
+```bash
+cd /opt/DynamicPopulationDensity
+```
+
+3. A file named ict302-node.service must exist in the same directory:
+
+```bash
+/opt/DynamicPopulationDensity/scripts/node/ict302-node.service
+
+```
+
+#### Option 1: Setup with Virtual Environment
+
+To set up the program using a Python virtual environment, execute the following command with sudo privileges:
+
+```bash
+sudo ./scripts/node/setup.sh
+```
+
+#### Option 2: Setup without Virtual Environment
+
+To set up the program without a virtual environment, execute the following command with sudo privileges:
+
+```bash
+sudo ./scripts/node/configure_setup_pizerow_without_venv.sh
+```
+---
+## Configuring, Setting Up and Running Database Management System
+
+### For MongoDB on Ubuntu 24.04.3 LTS using terminal
+
+To start collecting data, you’ll first need to set up a database.  
+This project uses **MongoDB** as the chosen database system.
+
+For setup, we assume you are using a Linux distribution such as **Ubuntu** or **Debian**, as most of the commands in the provided shell script are designed for these environments and are specifically configured for **MongoDB 8.0**.
+
+In the `scripts` folder, you’ll find two relevant scripts for this section:
+
+```bash
+- ./scripts/database/setup_run_mongodb_firewall.sh
+- ./scripts/database/create_index_seed_mongodb_collection.sh 
+(and its corresponding JavaScript file: ./scripts/create_index_seed_mongodb_collection.js)
+
+```
+
+**Important:**
+Engineers must ensure that the JavaScript file `create_index_seed_mongodb_collection.js`
+is located in the **same directory** as `create_index_seed_mongodb_collection.sh` before execution.
+The shell script automatically loads this JS file during execution using a relative path.
+
+#### Step 1: Install, Configure, Secure and Run MongoDB
+
+Run the following shell script to install, configure, and secure the MongoDB instance:
+
+```bash
+sudo ./scripts/database/setup_run_mongodb_firewall.sh
+```
+
+This script performs the following tasks:
+
+- Installs MongoDB 8.0 and all necessary dependencies
+
+- Configures network bindings, authentication, and security settings
+
+- Generates admin and application user credentials stored securely in `/root/mongo-secrets.env`
+
+- Optionally configures firewall rules and VPN access restrictions for enhanced security
+
+**Note**:
+Ensure that your server or virtual machine has internet access during installation.
+The script requires sudo privileges as it modifies system-level configurations.
+
+#### Step 2: Create Collections, Indexes, and Seed Data
+
+Once MongoDB is installed and secured, run the following script to create the required collections, indexes, and initial seed data:
+
+```bash
+sudo ./scripts/database/create_index_seed_mongodb_collection.sh
+```
+
+This script will:
+
+- Connect to the MongoDB instance using credentials defined in /root/mongo-secrets.env
+
+- Create and index the required collections for:
+
+```
+        nodes
+
+        locations
+
+        nodeEvents
+
+        attendanceHistory
+
+        densityHistory
+```
+
+- Seed initial data for **nodes** and **locations**
+
+- Display verification logs confirming each collection, index, and seed operation
+
+# Manual installation (Optional - Setup Python environment)
+---
 ### Virtual Environments and Setup
 
 ```bash
@@ -63,174 +238,7 @@ pip install pyshark
 # Deactivate virtual environment if required
 deactivate
 ```
-
-### Running Shell Script
-
-```bash
-# Before executing a script, ensure it has executable permissions:
-chmod +x examplescriptname.sh
-```
-===============================================================================================
-## Connecting to Murdoch's Ubuntu Virtual Machine
-
-To access Murdoch's Virtual Machine, each device must first connect to Murdoch's VPN.
-Currently, only one device can be connected to the VPN at a time.
-
-### How To Connect to Murdoch's VPN
-
-```bash
-# Install OpenConnect on a Linux device
-sudo ./scripts/vpn/install_vpn.sh
-
-# Start the VPN connection on a Linux or macOS device if using OpenConnect
-sudo ./scripts/vpn/connect_murdoch_vpn.sh
-```
-
-### How To Log In to Murdoch's Virtual Machine
-
-From a terminal, run the following command and enter the password provided:
-
-```bash
-ssh \<enter computer name\>@\<enter ip address\>
-```
-
-### How To Log Out from Murdoch's Virtual Machine
-
-In the same terminal session used for SSH, run:
-
-```bash
-logout
-```
-
-### How To Disconnect from Murdoch's VPN
-
-```bash
-# Stop the VPN connection if used OpenConnect
-sudo ./scripts/vpn/disconnect_murdoch_vpn.sh
-```
-===============================================================================================
-## Configuring, Setting Up, and Executing the Program for a Node
-
-### For Raspberry Pi Zero W on Raspberry Pi OS Lite 32-bit
-
-This section explains how to configure and execute the node program on a **Raspberry Pi Zero W** running **Raspberry Pi OS Lite (32-bit)**.
-
 ---
-
-### Pre-Setup Requirements
-
-Before running the setup script, ensure the following conditions are met:
-
-1. The **`DynamicPopulationDensity`** directory must be stored in the `/opt` directory:
-
-```bash
-/opt/DynamicPopulationDensity
-```
-
-2. The setup script must be executed **from within** the `DynamicPopulationDensity` directory:
-
-```bash
-cd /opt/DynamicPopulationDensity
-```
-
-3. A file named ict302-node.service must exist in the same directory:
-
-```bash
-/opt/DynamicPopulationDensity/scripts/node/ict302-node.service
-
-```
-
-Option 1: Setup with Virtual Environment
-
-To set up the program using a Python virtual environment, execute the following command with sudo privileges:
-
-```bash
-sudo ./scripts/node/setup.sh
-```
-
-Option 2: Setup without Virtual Environment
-
-To set up the program without a virtual environment, execute the following command with sudo privileges:
-
-```bash
-sudo ./scripts/node/configure_setup_pizerow_without_venv.sh
-```
-===============================================================================================
-## Configuring, Setting Up and Running Database Management System
-
-### For MongoDB on Ubuntu 24.04.3 LTS using terminal
-
-To start collecting data, you’ll first need to set up a database.  
-This project uses **MongoDB** as the chosen database system.
-
-For setup, we assume you are using a Linux distribution such as **Ubuntu** or **Debian**, as most of the commands in the provided shell script are designed for these environments and are specifically configured for **MongoDB 8.0**.
-
-In the `scripts` folder, you’ll find two relevant scripts for this section:
-
-```bash
-- ./scripts/database/setup_run_mongodb_firewall.sh
-- ./scripts/database/create_index_seed_mongodb_collection.sh (and its corresponding JavaScript file: ./scripts/create_index_seed_mongodb_collection.js)
-
-```
-
-**Important:**
-Engineers must ensure that the JavaScript file `create_index_seed_mongodb_collection.js`
-is located in the **same directory** as `create_index_seed_mongodb_collection.sh` before execution.
-The shell script automatically loads this JS file during execution using a relative path.
-
-### Step 1: Install, Configure, Secure and Run MongoDB
-
-Run the following shell script to install, configure, and secure the MongoDB instance:
-
-```bash
-sudo ./scripts/database/setup_run_mongodb_firewall.sh
-```
-
-This script performs the following tasks:
-
-- Installs MongoDB 8.0 and all necessary dependencies
-
-- Configures network bindings, authentication, and security settings
-
-- Generates admin and application user credentials stored securely in `/root/mongo-secrets.env`
-
-- Optionally configures firewall rules and VPN access restrictions for enhanced security
-
-**Note**:
-Ensure that your server or virtual machine has internet access during installation.
-The script requires sudo privileges as it modifies system-level configurations.
-
-### Step 2: Create Collections, Indexes, and Seed Data
-
-Once MongoDB is installed and secured, run the following script to create the required collections, indexes, and initial seed data:
-
-```bash
-sudo ./scripts/database/create_index_seed_mongodb_collection.sh
-```
-
-This script will:
-
-- Connect to the MongoDB instance using credentials defined in /root/mongo-secrets.env
-
-- Create and index the required collections for:
-
-```
-        nodes
-
-        locations
-
-        nodeEvents
-
-        attendanceHistory
-
-        densityHistory
-```
-
-- Seed initial data for **nodes** and **locations**
-
-- Display verification logs confirming each collection, index, and seed operation
-
-
 ### How To Run Manually
 
 #### Node
@@ -251,7 +259,7 @@ python -m src.server.index
 # Alternatively, run
 ./scripts/server/run_server.sh
 ```
-
+---
 ### Config Files
 
 This file has a few config files required, most of the config files are self explianatory, but the most important two are "data/server/suspicionFactors.json" and "data/node/sniffingConfig.json".
@@ -306,11 +314,12 @@ This file has a few config files required, most of the config files are self exp
   "output_file": "./data/captures/capture.pcapng"
 }
 ```
-
+---
 ## GitHub Ettique
 
 Please create your own branches and commit to them slowly. Once a feature is completed, provide a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) to merge the main code with the [master branch](https://github.com/cameronsims/DynamicPopulationDensity).<br/>Once a pull request has been made and you want it merged please email "cameronissacsims@gmail.com" to get my attention.
 
+---
 ## Programming Style Guide
 
 ### Code Assumptions
@@ -337,6 +346,7 @@ pip install sphinx-rtd-theme
 | Classes   | Classes should contain all of the following: \:class\:/\:struct\:, \:date\:, \:author\:, \:brief\:                                                              |
 | Variables | Variables should only require documentation if they are existing in a class or global. For this, only describing the variable in one line should be nessessary. |
 
+---
 ## Writing Style
 
 ### Coupling / Cohesion
