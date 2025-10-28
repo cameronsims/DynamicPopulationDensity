@@ -154,26 +154,31 @@ if [ "$network" == "home" ]; then
     echo "Connection to Murdoch's VPN successful."
 fi
 
+# Check if user have stored the mongo-secrets.env in the root directory
+read -p "Have you stored the mongo-secrets.env in the root directory (y/n)? /root/mongo-secrets.env" isStored
+echo "$isStored"
 
-# retrieve the MongoDB connection string from the environment variable or file
-SECRETS_FILE="/root/mongo-secrets.env"
-# shellcheck disable=SC1090
-source "$SECRETS_FILE"
+if [ "$isStored" == "y" || "$isStored" == "yes"]; then
+    # retrieve the MongoDB connection string from the environment variable or file
+    SECRETS_FILE="/root/mongo-secrets.env"
+    # shellcheck disable=SC1090
+    source "$SECRETS_FILE"
 
-# Required env vars (using APP_* per your connection below)
-: "${APP_USER_2:?Missing APP_USER_2 in ${SECRETS_FILE}}"
-: "${APP_PASS_2:?Missing APP_PASS_2 in ${SECRETS_FILE}}"
-: "${APP_DB:?Missing APP_DB in ${SECRETS_FILE}}"
-: "${BIND_IP:?Missing BIND_IP in ${SECRETS_FILE}}"
+    # Required env vars (using APP_* per your connection below)
+    : "${APP_USER_2:?Missing APP_USER_2 in ${SECRETS_FILE}}"
+    : "${APP_PASS_2:?Missing APP_PASS_2 in ${SECRETS_FILE}}"
+    : "${APP_DB:?Missing APP_DB in ${SECRETS_FILE}}"
+    : "${BIND_IP:?Missing BIND_IP in ${SECRETS_FILE}}"
 
-DB_URI="mongodb://${APP_USER_2}:${APP_PASS_2}@${BIND_IP}:27017/${APP_DB}?authSource=${APP_DB}"
+    DB_URI="mongodb://${APP_USER_2}:${APP_PASS_2}@${BIND_IP}:27017/${APP_DB}?authSource=${APP_DB}"
 
-# Check MongoDB connection using pymongo
-echo "Checking MongoDB connection..."
-if ! python3 -c "from pymongo import MongoClient; client = MongoClient('$DB_URI'); client.admin.command('ping')" &> /dev/null; then
-    echo "Error: Unable to connect to MongoDB. Please ensure MongoDB is running and accessible."
-    exit 1
-fi  
+    # Check MongoDB connection using pymongo
+    echo "Verifying MongoDB connection..."
+    if ! python3 -c "from pymongo import MongoClient; client = MongoClient('$DB_URI'); client.admin.command('ping')" &> /dev/null; then
+        echo "Error: Unable to connect to MongoDB. Please ensure MongoDB is running and accessible."
+        exit 1
+    fi 
+fi 
 
 # Check if user would like to install raspberry pi connect lite
 read -p "Would you like to install Raspberry Pi Connect Lite to remote into the node? (y/n) " install_rp_connect
