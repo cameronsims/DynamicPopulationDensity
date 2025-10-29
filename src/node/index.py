@@ -4,6 +4,7 @@
 :brief: This module initializes the client and sets up the main application.
 """
 from colorama import Fore, Back, Style
+import traceback
 
 from pyshark.capture.capture import TSharkCrashException
 from src.database.Client import DatabaseClient
@@ -35,15 +36,25 @@ def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert
             # Read the packets from what the sniffer inserted.
             print("Reading Packets from File...")
             packets = sniffer.get_packets_from_file()
+
+            # Read into the packet
+            if insert_into_db:
+                # Insert all packets into the database.
+                print("Inserting Packets into Database...")
+                dbclient.attendance_client.insert_many(packets)
+
         except TSharkCrashException:
+            # Handle known tshark crash by reinitializing the sniffer and continuing
             print(f'{Back.YELLOW}Tshark crashed! Restarting...{Style.RESET_ALL}')
             sniffer = Sniffer(SNIFFING_FNAME, NODE_INFO_FNAME)
-
-        # Read into the packet
-        if insert_into_db: 
-            # Insert all packets into the database.
-            print("Inserting Packets into Database...")
-            dbclient.attendance_client.insert_many(packets)
+        except KeyboardInterrupt:
+            # Allow graceful exit from the loop on Ctrl+C
+            print('Loop exiting due to Keyboard Interrupt...')
+            break
+        except Exception as e:
+            # Catch-all for unexpected exceptions in the loop to avoid process crash
+            print(f"{Back.RED}Unhandled exception in node_loop: {e}{Style.RESET_ALL}")
+            traceback.print_exc()
 
         # Increment the loop amount
         i += 1
@@ -67,16 +78,23 @@ def node_main(max_loops: int, insert_into_db: bool, use_params: bool):
     successfully_exited = True
 
     # Clear the attendance client, we don't want any data from previous hours to intersect.
+    dbclient = None
     try:
         dbclient = DatabaseClient(DBLOGIN_FNAME)
 
         # Enter the loop
         node_loop(sniffer, dbclient, max_loops, insert_into_db, use_params)
     except ServerSelectionTimeoutError as e:
-        print(f"{Back.RED}Error: Cannot find the server, are you sure you're connected and the MongoDB is at \"{dbclient.ip_address}\"{Style.RESET_ALL}")
+        ip = getattr(dbclient, 'ip_address', 'unknown')
+        print(f"{Back.RED}Error: Cannot find the server, are you sure you're connected and the MongoDB is at \"{ip}\"{Style.RESET_ALL}")
         successfully_exited = False
     except KeyboardInterrupt:
         print('Loop exiting due to Keyboard Interrupt...')
+    except Exception as e:
+        # Catch any other unexpected exceptions, print traceback and exit gracefully
+        print(f"{Back.RED}Unhandled exception in node_main: {e}{Style.RESET_ALL}")
+        traceback.print_exc()
+        successfully_exited = False
 
     colour_code = f"{Fore.GREEN}{Back.RESET}" if successfully_exited else f"{Fore.RED}{Back.RESET}"
     print(f"{colour_code}Node has finished execution!{Style.RESET_ALL}")

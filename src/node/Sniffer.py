@@ -6,6 +6,7 @@
 
 from pyshark import LiveCapture, FileCapture
 from pyshark.packet.packet import Packet
+from pyshark.capture.capture import TSharkCrashException
 from src.structures.attendance import Attendance
 from src.structures.PacketType import PacketType
 
@@ -177,9 +178,8 @@ class Sniffer:
         :brief: Gets the list of packets from a previously defined output file
         :param output_file: The file to read the captured packets from.
         """
+        if True:
 
-        # If tshark crashes...
-        try:
             # If the output file is not defined, use the one defined in the constructor
             if output_file is None:
                 output_file = self.output_file
@@ -208,11 +208,6 @@ class Sniffer:
                     packets.append(attendance)
                 i += 1
             return packets
-        except TSharkCrashException as e:
-            print('Warning: TShark crashed.')
-            if self.debug_mode:
-                print(e)
-            return []
 
     def is_packet_bluetooth(self, packet: Packet) -> bool:
         """
