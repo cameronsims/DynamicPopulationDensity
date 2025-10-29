@@ -177,34 +177,42 @@ class Sniffer:
         :brief: Gets the list of packets from a previously defined output file
         :param output_file: The file to read the captured packets from.
         """
-        # If the output file is not defined, use the one defined in the constructor
-        if output_file is None:
-            output_file = self.output_file
 
-        # Create the file capture instance
-        self.file_capture = FileCapture(
-            input_file=output_file, 
-            #use_json=True, 
-            #include_raw=True, 
-            tshark_path=self.tshark_path)
-        
-        # Load the packets into the program, if not activated the packets won't be read.
-        self.file_capture.load_packets()
+        # If tshark crashes...
+        try:
+            # If the output file is not defined, use the one defined in the constructor
+            if output_file is None:
+                output_file = self.output_file
 
-        len_file_capture = len(self.file_capture)
-        packets = [ 0 ] * len_file_capture
-        i = 0
-        for packet in self.file_capture:
-            # get the attendance instance of this packet...
-            attendance = self.convert_packet_to_attendance(packet)
+            # Create the file capture instance
+            self.file_capture = FileCapture(
+                input_file=output_file, 
+                #use_json=True, 
+                #include_raw=True, 
+                tshark_path=self.tshark_path)
+            
+            # Load the packets into the program, if not activated the packets won't be read.
+            self.file_capture.load_packets()
 
-            # If we have space in the array, use it, otherwise append.
-            if i < len_file_capture:
-                packets[i] = attendance
-            else:
-                packets.append(attendance)
-            i += 1
-        return packets
+            len_file_capture = len(self.file_capture)
+            packets = [ 0 ] * len_file_capture
+            i = 0
+            for packet in self.file_capture:
+                # get the attendance instance of this packet...
+                attendance = self.convert_packet_to_attendance(packet)
+
+                # If we have space in the array, use it, otherwise append.
+                if i < len_file_capture:
+                    packets[i] = attendance
+                else:
+                    packets.append(attendance)
+                i += 1
+            return packets
+        except TSharkCrashException as e:
+            print('Warning: TShark crashed.')
+            if self.debug_mode:
+                print(e)
+            return []
 
     def is_packet_bluetooth(self, packet: Packet) -> bool:
         """

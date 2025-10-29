@@ -3,7 +3,9 @@
 :date: 22/08/2025
 :brief: This module initializes the client and sets up the main application.
 """
+from colorama import Fore, Back, Style
 
+from pyshark.capture.capture import TSharkCrashException
 from src.database.Client import DatabaseClient
 from src.node.Sniffer import Sniffer
 
@@ -25,13 +27,17 @@ def node_loop(sniffer: Sniffer, dbclient: DatabaseClient, max_loops: int, insert
     """
     i = 0
     while max_loops < 0 or i < max_loops:
-        # Start the sniffer, save to file.
-        print("Start Sniffing...")
-        sniffer.start_sniffing(use_params=use_params)
+        try:
+            # Start the sniffer, save to file.
+            print("Start Sniffing...")
+            sniffer.start_sniffing(use_params=use_params)
 
-        # Read the packets from what the sniffer inserted.
-        print("Reading Packets from File...")
-        packets = sniffer.get_packets_from_file()
+            # Read the packets from what the sniffer inserted.
+            print("Reading Packets from File...")
+            packets = sniffer.get_packets_from_file()
+        except TSharkCrashException:
+            print(f'{Back.YELLOW}Tshark crashed! Restarting...{Style.RESET_ALL}')
+            sniffer = Sniffer(SNIFFING_FNAME, NODE_INFO_FNAME)
 
         # Read into the packet
         if insert_into_db: 
@@ -54,7 +60,6 @@ def node_main(max_loops: int, insert_into_db: bool, use_params: bool):
     :param use_params: Used if we want to use tshark more directly, helps with some errors to do with capture files.
     """
     from pymongo.errors import ServerSelectionTimeoutError
-    from colorama import Fore, Back, Style
 
     # Sniffer that we are using.
     sniffer = Sniffer(SNIFFING_FNAME, NODE_INFO_FNAME)
