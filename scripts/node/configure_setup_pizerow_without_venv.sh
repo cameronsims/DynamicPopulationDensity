@@ -73,19 +73,6 @@ fi
 # Check if required files exist before finishing
 echo "Verifying required files..."
 
-# Check for .env file
-echo "Checking for /root/mongo-secrets.env file..."
-if [ ! -f "/root/mongo-secrets.env" ]; then
-    echo "Error: /root/mongo-secrets.env file not found!"
-    exit 1
-fi
-
-echo "Checking if /root/mongo-secrets.env file is readable..."
-if [ ! -r "/root/mongo-secrets.env" ]; then
-    echo "Error: /root/mongo-secrets.env file is not readable!"
-    exit 1
-fi
-
 # Check for database folder and it's files existence
 echo "Checking for ../DynamicPopulationDensity/src/database directory and its files..."
 if [ ! -d "../DynamicPopulationDensity/src/database" ]; then
@@ -159,6 +146,18 @@ read -p "Have you stored the mongo-secrets.env in the root directory (y/n)? /roo
 echo "$isStored"
 
 if [ "$isStored" == "y" || "$isStored" == "yes"]; then
+    # Check for .env file
+    echo "Checking for /root/mongo-secrets.env file..."
+    if [ ! -f "/root/mongo-secrets.env" ]; then
+        echo "Error: /root/mongo-secrets.env file not found!"
+        exit 1
+    fi
+
+    echo "Checking if /root/mongo-secrets.env file is readable..."
+    if [ ! -r "/root/mongo-secrets.env" ]; then
+        echo "Error: /root/mongo-secrets.env file is not readable!"
+        exit 1
+    fi
     # retrieve the MongoDB connection string from the environment variable or file
     SECRETS_FILE="/root/mongo-secrets.env"
     # shellcheck disable=SC1090
