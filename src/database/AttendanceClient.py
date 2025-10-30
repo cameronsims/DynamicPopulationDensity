@@ -109,7 +109,7 @@ class AttendanceDB(ProtoClient):
              # Check if it is within bounds...
             return (attendance.strength < minimum_strength)
         
-        return strength_options['include_null']
+        return not strength_options['include_null']
 
     def get_frequencies(self, entries: list[dict], strength_options: dict) -> dict:
         """
@@ -271,7 +271,7 @@ class AttendanceDB(ProtoClient):
 
         return nodes
 
-    def convert_mac_accesses_to_history(self, full_nodes: list[Node], nodes: dict) -> list[Density]:
+    def convert_mac_accesses_to_history(self, full_nodes: list[Node], nodes: dict, estimation_options: dict) -> list[Density]:
         """
         :fn: convert_mac_accesses_to_history
         :date: 05/09/2025
@@ -286,9 +286,11 @@ class AttendanceDB(ProtoClient):
         for node_id in nodes:
             # Get the node 
             node = None 
+            str_node_id = str(node_id)
+
             # Get the class instance of the node
             for potential_node in full_nodes:
-                if potential_node.id == node_id:
+                if potential_node.id == str_node_id:
                     node = potential_node
 
             # For each timestamp in that node.
@@ -297,11 +299,12 @@ class AttendanceDB(ProtoClient):
                 freq = nodes[node_id][ts]
 
                 # New Historic Attendance.
-                historic = Density(ts, node, freq)
+                historic = Density(ts, node, freq, estimation_options['estimation_factor'])
+
                 history.append(historic)
         return history
 
-    def squash(self, full_nodes: list[Node], sus_options: dict, strength_options: dict) -> list[Density]:
+    def squash(self, full_nodes: list[Node], sus_options: dict, strength_options: dict, estimation_options: dict) -> list[Density]:
         """
         :fn: squash
         :date: 03/09/2025
@@ -321,6 +324,7 @@ class AttendanceDB(ProtoClient):
 
         # Get the suspicious macs 
         macs_over_times = self.get_total_mac_occurances(freq)
+
         suspicious_macs = self.get_suspicious_macs(sus_options, freq, macs_over_times)
 
         # This is the map of every node, every 30 mins.
@@ -332,4 +336,4 @@ class AttendanceDB(ProtoClient):
             for timestamp in nodes[node_id]:
                 print(timestamp, nodes[node_id][timestamp])
         
-        return self.convert_mac_accesses_to_history(full_nodes, nodes)
+        return self.convert_mac_accesses_to_history(full_nodes, nodes, estimation_options)

@@ -8,6 +8,7 @@ from src.database.Client import DatabaseClient
 DBLOGIN_FNAME    = "./data/database/dbLogin.json"
 SUSFACTORS_FNAME = "./data/server/suspicionFactors.json"
 STRFACTORS_FNAME = "./data/server/strengthFactors.json"
+ESTFACTORS_FNAME = "./data/server/estimationFactors.json"
 
 def server_create_node_history(dbclient: DatabaseClient): 
     """
@@ -33,7 +34,7 @@ def server_create_node_history(dbclient: DatabaseClient):
     for node in nodes:
         graph_client.create_node_timeline(node, history).show()
 
-def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, strength_factors_fname: str, push_to_db: bool, clear_db: bool):
+def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, strength_factors_fname: str, estimation_factors_fname: str, push_to_db: bool, clear_db: bool):
     """
     :fn: server_squash:
     :date: 10/09/2025
@@ -55,6 +56,9 @@ def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, streng
     strength_file = open(strength_factors_fname)
     strength_factors = json_load(strength_file)
 
+    estimation_file = open(estimation_factors_fname)
+    estimation_factors = json_load(estimation_factors)
+
     # Read the json file, for frequency
     frequency_json = open('./data/server/frequency.json', 'r')
     frequency_data = json_load(frequency_json)
@@ -63,8 +67,7 @@ def server_squash(dbclient: DatabaseClient, suspicion_factors_fname: str, streng
     # Squash the database
     print("Squashing the Database Insertion.")
     while True:
-        dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, push_to_db, clear_db)
-        print('huh')
+        dbclient.convert_attendance_to_historic(sus_options=suspicion_factors, strength_options=strength_factors, estimation_options=estimation_factors, push_to_db=push_to_db, clear_db=clear_db)
 
         # Sleep for however long.
         time_sleep(frequency)
@@ -78,14 +81,35 @@ def server_main(push_to_db: bool, clear_db: bool):
     :param push_to_db: Do we put the database elements into the database?
     :param clear_db: Do we clear the attendance database?
     """
+    from json import load as json_load
 
     dbclient = DatabaseClient(DBLOGIN_FNAME)
 
     # Flatten the database.
-    server_squash(dbclient, SUSFACTORS_FNAME, STRFACTORS_FNAME, push_to_db, clear_db)
+    # server_squash(dbclient, SUSFACTORS_FNAME, STRFACTORS_FNAME, ESTFACTORS_FNAME, push_to_db, clear_db)
+    suspicion_factors_fname, strength_factors_fname, estimation_factors_fname = SUSFACTORS_FNAME, STRFACTORS_FNAME, ESTFACTORS_FNAME
     
     # Create histories and graphs, move this somewhere else.
-    if False:
+    if True:
+        # Read the file
+        suspicion_file = open(suspicion_factors_fname)
+        suspicion_factors = json_load(suspicion_file)
+
+        strength_file = open(strength_factors_fname)
+        strength_factors = json_load(strength_file)
+
+        estimation_file = open(estimation_factors_fname)
+        estimation_factors = json_load(estimation_file)
+
+        # Read the json file, for frequency
+        frequency_json = open('./data/server/frequency.json', 'r')
+        frequency_data = json_load(frequency_json)
+        frequency = int(frequency_data['seconds'])
+
+        # Squash the database
+        print("Squashing the Database Insertion.")
+        density = dbclient.convert_attendance_to_historic(suspicion_factors, strength_factors, estimation_factors, push_to_db, clear_db)
+               
         server_create_node_history(dbclient)
    
 

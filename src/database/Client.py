@@ -97,7 +97,7 @@ class DatabaseClient:
             collection = self.mongo_database[collection_name]
             collection.delete_many({})
 
-    def convert_attendance_to_historic(self, sus_options: dict, strength_options: dict, push_to_db: bool = False, clear_db: bool = False) -> list[Density]:
+    def convert_attendance_to_historic(self, sus_options: dict, strength_options: dict, estimation_options: dict, push_to_db: bool = False, clear_db: bool = False) -> list[Density]:
         """ 
         :fn: convert_attendance_to_historic
         :date: 05/09/2025
@@ -113,7 +113,7 @@ class DatabaseClient:
         full_nodes = self.node_client.get(Node)
 
         # Get the squashed data.
-        squashed = self.attendance_client.squash(full_nodes, sus_options, strength_options)
+        squashed = self.attendance_client.squash(full_nodes, sus_options, strength_options, estimation_options)
 
         # Convert the squashed data to Historic Data client
         if push_to_db:

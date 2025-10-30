@@ -14,7 +14,7 @@ class Density:
     :author: Cameron Sims
     :brief: This class is used to refer to an attendance record that has been compiled.
     """
-    def __init__(self, timestamp: datetime = datetime.now(), node: Node | str = None, total_entries: int = -1, total_estimated_humans: int = 0, estimation_factors: int = 0): 
+    def __init__(self, timestamp: datetime = datetime.now(), node: Node | str = None, total_entries: int = -1, estimation_factors: int = 1): 
         """
         :fn: __init__
         :date: 22/08/2025
@@ -34,9 +34,10 @@ class Density:
 
         # This refers to the total number of entries that were observed at this time.
         self.total_entries = total_entries
-        
-        self.total_estimated_humans = total_estimated_humans
+    
+        # Estimations of people.
         self.estimation_factors = estimation_factors
+        self.total_estimated_humans = int(self.total_entries / self.estimation_factors)
 
     def __hash__(self):
         """
@@ -73,11 +74,14 @@ class Density:
         :brief: Serialises the historic attendance into a dictionary format for database insertion.
         :return: A dictionary representation of the attendace.
         """
+        print('location_id:', self.location_id, type(self.location_id))
+        print('node_id:', self.node_id, type(self.node_id))
+
         # This is used to serialise the record, this is used to insert the node into the database.
         return {
             "date_time": self.timestamp,
-            "location_id": ObjectID(self.location_id),
-            "node_id": ObjectID(self.node_id),
+            "location_id": self.location_id if (type(self.location_id) is type(ObjectID)) else ObjectID(self.location_id),
+            "node_id": self.node_id if (type(self.node_id) is type(ObjectID)) else ObjectID(self.node_id),
             "total_estimated_devices": self.total_entries,
             "total_estimated_humans": self.total_estimated_humans,
             "estimation_factors": self.estimation_factors

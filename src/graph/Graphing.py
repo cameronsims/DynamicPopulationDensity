@@ -44,7 +44,7 @@ class Graphing:
 
         # We will look through the history, only adding if it is the same node id.
         for record in history:
-            if record.node_id == node.id:
+            if str(record.node_id) == str(node.id):
                 quantities.append(record.total_entries)
                 timestamps.append(record.timestamp)
 
@@ -90,7 +90,7 @@ class Graphing:
         # For each record we have.
         for record in history:
             #print(record.node_id, record.location_id)
-            index = node_id_to_index[record.node_id]
+            index = node_id_to_index[str(record.node_id)]
             totals[index] += record.total_entries
 
         # Create the bar graph.
