@@ -51,6 +51,10 @@ sudo setcap cap_net_raw,cap_net_admin+eip /bin/dumpcap
 echo "Installing required python3-colorama"
 sudo apt install python3-colorama
 
+# Install Bluetooth and it's required packages
+echo "Installing Bluetooh and it's required packages..."
+sudo apt install Bluetooth bluez libdbus-1-dev libglib2.0-dev python3-bleak
+
 # Install required Python packages
 echo "Installing required Python packages..."
 pip3 install pymongo --break-system-packages --root-user-action

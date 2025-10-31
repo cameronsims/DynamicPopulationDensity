@@ -8,7 +8,7 @@ Type=simple
 # Path to your Python interpreter and script
 # ExecStart=/usr/bin/python3 -m src.node.index
 ExecStart=/usr/bin/python3 /opt/DynamicPopulationDensity/src/node/BleSniffer.py
-# ExecStart=/usr/bin/bash /opt/DynamicPopulationDensity/scripts/node/start_all.sh
+# ExecStart=/usr/bin/bash /opt/DynamicPopulationDensity/scripts/node/start_all_node_sniffer.sh
 
 # Working directory
 WorkingDirectory=/opt/DynamicPopulationDensity/

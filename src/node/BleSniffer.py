@@ -6,13 +6,13 @@ import asyncio
 import hashlib
 import time
 import os
-import pytz
 from datetime import datetime, timezone
 from collections import defaultdict, deque
 
 from bleak import BleakScanner
 from pymongo import MongoClient
 from bson import ObjectId
+from zoneinfo import ZoneInfo
 
 
 # =======================
@@ -30,8 +30,8 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://dpd_node_lab_a:nzMvTAB7yZPhCqZCTvQ
 DB_NAME = os.getenv("DB_NAME", "dynamicpopulationdensity_db")
 
 # Foreign keys (from existing Node & Location documents)
-NODE_ID_STR = os.getenv("NODE_ID", "68f0af9f149c526815ce5f4a")
-LOCATION_ID_STR = os.getenv("LOCATION_ID", "68f0af9f149c526815ce5f47") 
+NODE_ID_STR = os.getenv("NODE_ID", "68f0af9f149c526815ce5f4c")
+LOCATION_ID_STR = os.getenv("LOCATION_ID", "68f0af9f149c526815ce5f49") 
 
 # Collection names (aligning with your dictionary)
 COL_NODE_EVENTS = "nodeEvents"              # (Entity – NodeEvent)
@@ -43,12 +43,9 @@ COL_DENSITY = "densityHistory"              # (Entity – DensityHistory)
 # =======================
 seen = defaultdict(deque)  # seen[hashed_addr] -> deque[timestamps]
 
-def get_perth_time():
-    perth_tz = pytz.timezone("Australia/Perth")
-    return datetime.now(perth_tz)
 
 def _utcnow():
-    return datetime.now(timezone.utc)
+    return datetime.now(ZoneInfo("Australia/Perth"))
 
 
 def ensure_log_dir():
@@ -114,9 +111,8 @@ async def run_scan():
     """Continuously scan BLE devices and write to MongoDB"""
     while True:
         now_epoch = int(time.time())
-        # now_ts = _utcnow()
-        now_ts = get_perth_time()
-        
+        now_ts = _utcnow()
+
         # Scan
         devices = await BleakScanner.discover(timeout=SCAN_INTERVAL)
 
@@ -177,7 +173,7 @@ async def run_scan():
             node_events_col.insert_one({
                 "node_id": NODE_ID,
                 "is_powered": True,                 # process is running
-                "is_receiving_data": is_receiving,  # saw any bluetooth adverts this interval
+                "is_receiving_data": is_receiving,  # saw any adverts this interval
                 "date_time": now_ts,
             })
         except Exception as e:
@@ -211,11 +207,11 @@ async def run_scan():
 
 
 if __name__ == "__main__":
-    print("[BLE Sniffer] Starting scan + Mongo logging…")
+    print("[BLE Scanner] Starting scan + Mongo logging…")
     try:
         asyncio.run(run_scan())
     except KeyboardInterrupt:
-        print("\n[BLE Sniffer] Stopped by user.")
+        print("\n[BLE Scanner] Stopped by user.")
     finally:
         try:
             client.close()
