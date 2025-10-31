@@ -1,13 +1,13 @@
 # TODO: ADD WEB SERVER COMMAND
 
-sudo cp /opt/DynamicePopulationDensity/scripts/node/ict302-webserver.service /etc/systemd/system/
-sudo cp /opt/DynamicePopulationDensity/scripts/node/ict302-bridgeserver.service /etc/systemd/system/
+sudo cp /opt/DynamicPopulationDensity/scripts/node/ict302-webserver.service /etc/systemd/system/
+sudo cp /opt/DynamicPopulationDensity/scripts/node/ict302-bridgeserver.service /etc/systemd/system/
 
 sudo systemctl daemon-reload
 
-sudo chmod +x /opt/DynamicPopulationDensity/scripts/node/start_all_webserver.sh
+sudo chmod +x ./scripts/node/start_all_webserver.sh
 
-sudo cd /opt/DynamicPopulationDensity/src/server/frontend/hive-matrix/
+cd src/server/frontend/hive-matrix/
 sudo npm install
 
 sudo systemctl enable ict302-webserver.service
