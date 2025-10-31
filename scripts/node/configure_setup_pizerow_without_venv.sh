@@ -53,7 +53,7 @@ sudo apt install python3-colorama
 
 # Install required Python packages
 echo "Installing required Python packages..."
-pip3 install pymongo --break-system-packages
+pip3 install pymongo --break-system-packages --root-user-action
 
 pip3 show pymongo &> /dev/null
 if [ $? -ne 0 ]; then
@@ -61,7 +61,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-pip3 install pyshark --break-system-packages
+pip3 install pyshark --break-system-packages --root-user-action
 
 pip3 show pyshark &> /dev/null
 if [ $? -ne 0 ]; then
@@ -142,10 +142,10 @@ if [ "$network" == "home" ]; then
 fi
 
 # Check if user have stored the mongo-secrets.env in the root directory
-read -p "Have you stored the mongo-secrets.env in the root directory (y/n)? /root/mongo-secrets.env" isStored
+read -p "Have you stored the mongo-secrets.env in the root directory [e.g /root/mongo-secrets.env] (y/n)" isStored
 echo "$isStored"
 
-if [ "$isStored" == "y" || "$isStored" == "yes"]; then
+if [ "$isStored" == "y" ]; then
     # Check for .env file
     echo "Checking for /root/mongo-secrets.env file..."
     if [ ! -f "/root/mongo-secrets.env" ]; then
