@@ -151,8 +151,8 @@ const [LOC1, LOC2, LOC3] = Object.values(locs.insertedIds);
 db.nodes.insertMany([
   {
     ip_address: "10.51.33.101", // Example IPv4 address, the actual IPs should be assigned as per network design
-    mac_address: "B8:27:EB:12:34:56", // Example MAC address, the actual MACs should be the hardware MACs of the devices
-    name: "NODE001",
+    mac_address: "B8:27:EB:12:34:56", // Example MAC address, the actual MACs should be the hardware MACs of the node
+    name: "Lab A - Mehlam",
     model: "Raspberry Pi Zero W",
     brand: "Raspberry Pi Foundation",
     ram_unit: "MB",
@@ -165,9 +165,9 @@ db.nodes.insertMany([
     location_id: LOC1
   },
   {
-    ip_address: "10.51.33.102", // Example IPv4 address, the actual IPs should be assigned as per network design
-    mac_address: "B8:27:EB:65:43:21", // Example MAC address, the actual MACs should be the hardware MACs of the devices
-    name: "NODE002",
+    ip_address: "100.64.0.2", // Example IPv4 address, the actual IPs should be assigned as per network design
+    mac_address: "00:e0:4c:36:05:dc", // Example MAC address, the actual MACs should be the hardware MACs of the node
+    name: "Lab B - Cameron",
     model: "Raspberry Pi Zero W",
     brand: "Raspberry Pi Foundation",
     ram_unit: "MB",
@@ -176,13 +176,13 @@ db.nodes.insertMany([
     storage_size: 16,
     storage_type: "microSD",
     is_poe_compatible: true,
-    is_wireless_connectivity: false,
+    is_wireless_connectivity: true,
     location_id: LOC2
   },
   {
-    ip_address: "10.51.33.103", // Example IPv4 address, the actual IPs should be assigned as per network design
-    mac_address: "B8:27:EB:AA:BB:CC", // Example MAC address, the actual MACs should be the hardware MACs of the devices
-    name: "NODE003",
+    ip_address: "134.115.149.49", // Example IPv4 address, the actual IPs should be assigned as per network design
+    mac_address: "00:e0:4c:36:05:cf", // Example MAC address, the actual MACs should be the hardware MACs of the node
+    name: "Lab G - Nasrin",
     model: "Raspberry Pi Zero W",
     brand: "Raspberry Pi Foundation",
     ram_unit: "MB",
