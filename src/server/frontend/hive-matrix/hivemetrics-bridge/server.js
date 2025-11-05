@@ -24,16 +24,13 @@ app.use(cors({
   exposedHeaders: ['Set-Cookie']
 }));
 
+
+app.set("etag", false);
+
+
 //registering cookie middleware
 app.use(express.json());
 app.use(cookieParser());
-
-//remove onece problem solved
-app.use((req, _res, next) => {
-  console.log(`[req] ${req.method} ${req.originalUrl}`);
-  next();
-});
-
 
 /*  DB connector  */
 let db = null;
@@ -243,6 +240,7 @@ async function getAadTokenForPbi(){
   if (!res?.accessToken) throw new Error("Failed to acquire AAD token");
   return res.accessToken;
 }
+
 
 app.get("/v1/powerbi/embed-config", requireAuth, async (req, res) => {
   try {

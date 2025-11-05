@@ -157,8 +157,8 @@ export default function LocationPage() {
       {!loading && !err && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="rounded-2xl bg-white p-4 shadow-sm border min-h-[360px]">
-            <div className="mb-2 text-sm text-slate-600">Line Chart (Power BI visual)</div>
-            <PowerBIReport pageName="LocationPage" filters={pbiFilters} height={360} />
+            <div className="mb-2 text-sm text-slate-600">Line Chart (Total number of people by day and nodeid)</div>
+            <PowerBIReport pageName="Linechart" filters={pbiFilters} height={420} />
           </div>
 
           {/* Locations table with Delete */}

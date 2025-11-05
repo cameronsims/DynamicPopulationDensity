@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [err, setErr] = useState<string | null>(null);
   const nav = useNavigate();
   const loc = useLocation();
+  const MSAL_OFF = import.meta.env.VITE_DISABLE_MSAL ==="1"; // remove this line when you need microsoft login
 
   useEffect(() => {
     if (isAuthed) nav(loc.state?.from?.pathname ?? "/dashboard", { replace: true });
@@ -42,11 +43,18 @@ export default function LoginPage() {
           </button>
         </form>
 
+
+        {!MSAL_OFF && ( // remove this line when you need microsoft login
+          <>
+
         <div className="text-sm text-center">— or —</div>
 
         <button onClick={loginWithMicrosoft} className="w-full border rounded py-2 hover:bg-slate-50">
           Sign in with Microsoft
         </button>
+        </>
+
+        )}
 
         {err && <p className="text-red-600 text-sm">{err}</p>}
       </div>

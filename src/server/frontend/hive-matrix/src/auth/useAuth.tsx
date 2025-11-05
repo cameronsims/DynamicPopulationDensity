@@ -80,6 +80,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     interval: null,
   });
 
+const MSAL_OFF = import.meta.env.VITE_DISABLE_MSAL ==="1"; // remove this line when you need microsoft login
+
+
   const setAccessToken = useCallback((t: string | null) => {
     if (t && !isTokenValid(t)) {
       console.warn("[auth] attempted to set invalid/expired token");
@@ -118,6 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 1) MSAL init + handle redirect on app start
   useEffect(() => {
+    if (MSAL_OFF) { setMsalReady(true); return; } // remove this line when you need microsoft login
     (async () => {
       await ensureMsal();
       try {
@@ -204,6 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function loginWithMicrosoft() {
+    if (MSAL_OFF) { alert( "Microsoft login is disabled for this environment."); return; } // remove this line when you need microsoft login
     try {
       await ensureMsal();
       await msal.loginRedirect({
@@ -218,6 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function handleMicrosoftCallback(_code?: string | null) {
+    if (MSAL_OFF) throw new Error("MSAL disabled"); // remove this line when you need microsoft login
     await ensureMsal();
     const result = await msal.handleRedirectPromise();
     if (result?.account) {

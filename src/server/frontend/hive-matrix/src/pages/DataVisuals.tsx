@@ -4,9 +4,10 @@ export default function DataVisualsPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Data Visuals</h1>
-      <PowerBIReport />
+      <h2 className="text-lg font-medium">Total Number of devices by Day and Location</h2>
+      <PowerBIReport pageName="Columnchart" height={560} />
       <p className="text-xs text-slate-500">
-        (Using mock embed config for wiring; will render your real report once we switch to a real embed token.)
+
       </p>
     </div>
   );

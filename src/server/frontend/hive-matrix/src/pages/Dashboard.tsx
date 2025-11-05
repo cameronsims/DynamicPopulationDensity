@@ -241,35 +241,30 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Heatmap + People by location side-by-side */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Heatmap (left on desktop) */}
-          <div className="rounded-2xl bg-white p-3 md:p-4 border shadow-sm h-[420px]">
-           <div className="mb-2">
-              <div className="text-sm text-slate-400">Heatmap</div>
-             <div className="text-xs text-slate-400">
-               From Power BI (page: <code>Heatmap</code>)
-              </div>
-            </div>
-           <PowerBIReport pageName="Heatmap" filters={filters} height={440} />
-         </div>
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  {/* Heatmap */}
+  <div className="rounded-xl bg-white border shadow-sm p-3 min-h-[520px]">
+    <div className="mb-2">
+      <h3 className="text-sm font-medium text-slate-700">Heatmap</h3>
+      <p className="text-[11px] text-slate-400">
 
-         {/* People by location (right on desktop) */}
-         <div className="rounded-2xl bg-white p-3 md:p-4 border shadow-sm h-[420px] overflow-hidden">
-            <div className="mb-2">
-             <div className="text-sm text-slate-400">People by location</div>
-              <div className="text-xs text-slate-400">
-                Counts pulled from Power BI (page: <code>PeopleByLocation</code>). Filters apply.
-              </div>
-           </div>
-            <PowerBIReport
-              pageName="PeopleByLocation"
-             filters={filters}
-              height={440}
+      </p>
+    </div>
+    <PowerBIReport pageName="Heatmap" height={460} className="rounded-lg" />
+  </div>
 
-    />
-         </div>
-        </section>
+  {/* People by location */}
+  <div className="rounded-xl bg-white border shadow-sm p-3 min-h-[520px]">
+    <div className="mb-2">
+      <h3 className="text-sm font-medium text-slate-700">Total Number of People by Day and Location</h3>
+      <p className="text-[11px] text-slate-400">
+
+      </p>
+    </div>
+    <PowerBIReport pageName="Stackbar" height={460} className="rounded-lg" />
+  </div>
+</section>
+
 
     </div>
   );

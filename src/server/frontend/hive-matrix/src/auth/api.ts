@@ -143,12 +143,6 @@ export async function deleteNode(id: string): Promise<void> {
   await api.delete(`/v1/nodes/${id}`);
 }
 
-/* Power BI embed config */
-
-const PBI_BASE =
-  (CONFIG as any).PBI_API_BASE ||
-  (import.meta as any).env?.VITE_PBI_API_BASE ||
-  "";
 
 export type PbiEmbedConfig = {
   reportId: string;
@@ -161,13 +155,8 @@ export type PbiEmbedConfig = {
 
 export const fetchPbiEmbedConfig = {
   async getEmbedConfig(): Promise<{ data: PbiEmbedConfig }> {
-    if (!PBI_BASE) {
-      throw new Error("PBI_API_BASE not set (check VITE_PBI_API_BASE / CONFIG.PBI_API_BASE)");
-    }
-    const { data } = await axios.get<PbiEmbedConfig>(`${PBI_BASE}/pbi/embed-config`, {
-      withCredentials: true,
-    });
+    // Use the bridge route exactly and the shared axios instance
+    const { data } = await api.get<PbiEmbedConfig>("/v1/powerbi/embed-config");
     return { data };
   },
 };
-
